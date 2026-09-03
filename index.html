@@ -1,0 +1,2147 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,maximum-scale=1">
+<meta name="theme-color" content="#0b0f19">
+<title>Math Quest Academy Pro</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+/* ============ RESET & BASE ============ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  -webkit-tap-highlight-color:transparent;
+  user-select:none;
+  background:var(--bg);
+  color:var(--fg);
+  font-size:15px;
+  line-height:1.45;
+  transition:background .3s ease,color .3s ease;
+}
+:root{
+  --bg:#0b0f19;
+  --bg2:#121829;
+  --card:#1a2236;
+  --card2:#232c47;
+  --fg:#e9eefb;
+  --muted:#8a94ae;
+  --accent:#6d8bff;
+  --accent2:#9b6dff;
+  --good:#3ddc97;
+  --bad:#ff6b7a;
+  --warn:#ffd166;
+  --gold:#ffd700;
+  --border:rgba(255,255,255,.08);
+  --shadow:0 8px 24px rgba(0,0,0,.35);
+  --radius:16px;
+}
+/* themes */
+body.theme-aurora{--bg:#0b0f19;--bg2:#121829;--card:#1a2236;--card2:#232c47;--fg:#e9eefb;--muted:#8a94ae;--accent:#6d8bff;--accent2:#9b6dff}
+body.theme-sunset{--bg:#1a0f1f;--bg2:#2a1530;--card:#3a1d44;--card2:#4c2856;--fg:#fdeef7;--muted:#c299b2;--accent:#ff7b6d;--accent2:#ffb86b}
+body.theme-forest{--bg:#0c1512;--bg2:#13201b;--card:#1a2d26;--card2:#243d32;--fg:#e6f3ec;--muted:#8cb0a0;--accent:#4ade80;--accent2:#22d3ee}
+body.theme-ocean{--bg:#071019;--bg2:#0c1a2a;--card:#122740;--card2:#1a3758;--fg:#e0f0ff;--muted:#80a0c0;--accent:#38bdf8;--accent2:#0ea5e9}
+body.theme-lava{--bg:#170606;--bg2:#2a0a0a;--card:#3d1010;--card2:#561616;--fg:#ffeaea;--muted:#c08080;--accent:#ef4444;--accent2:#f97316}
+body.theme-mint{--bg:#f0f7f4;--bg2:#e3efe8;--card:#ffffff;--card2:#f1f7f4;--fg:#0d2019;--muted:#5c776b;--accent:#10b981;--accent2:#06b6d4}
+body.theme-candy{--bg:#fdf2f8;--bg2:#fce7f3;--card:#ffffff;--card2:#fdf2f8;--fg:#4a1d3a;--muted:#9d6b88;--accent:#ec4899;--accent2:#a855f7}
+body.theme-graphite{--bg:#0c0c0d;--bg2:#17171a;--card:#202025;--card2:#2c2c33;--fg:#f0f0f3;--muted:#888895;--accent:#a1a1aa;--accent2:#d4d4d8}
+body.theme-royal{--bg:#0f0b24;--bg2:#191340;--card:#251c5c;--card2:#342a7a;--fg:#ede9ff;--muted:#a29ad1;--accent:#c084fc;--accent2:#fbbf24}
+body.theme-dark{--bg:#000000;--bg2:#0a0a0a;--card:#141414;--card2:#1f1f1f;--fg:#ffffff;--muted:#888888;--accent:#ffffff;--accent2:#a0a0a0}
+
+/* ============ LAYOUT ============ */
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;overflow:hidden;transform:translateX(100%);opacity:0;transition:transform .3s ease,opacity .3s ease;background:var(--bg);pointer-events:none}
+.screen.active{transform:translateX(0);opacity:1;pointer-events:auto}
+.screen.back{transform:translateX(-20%)}
+.header{
+  flex:0 0 auto;padding:14px 16px;display:flex;align-items:center;gap:10px;
+  background:linear-gradient(180deg,var(--bg2),var(--bg));
+  border-bottom:1px solid var(--border);
+  padding-top:calc(14px + env(safe-area-inset-top));
+}
+.header h1{font-size:18px;font-weight:700;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.icon-btn{
+  width:36px;height:36px;border-radius:10px;border:none;background:var(--card);color:var(--fg);
+  display:grid;place-items:center;cursor:pointer;transition:transform .15s,background .2s;
+}
+.icon-btn:active{transform:scale(.92);background:var(--card2)}
+.icon-btn svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.content{flex:1;overflow-y:auto;overflow-x:hidden;padding:14px 14px calc(80px + env(safe-area-inset-bottom));-webkit-overflow-scrolling:touch;scroll-behavior:smooth}
+.content::-webkit-scrollbar{width:0}
+
+/* ============ BOTTOM NAV ============ */
+.bottom-nav{
+  position:absolute;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));
+  display:flex;justify-content:space-around;gap:6px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:20px;padding:8px;z-index:50;
+  box-shadow:var(--shadow);backdrop-filter:blur(10px);
+}
+.nav-btn{
+  flex:1;border:none;background:transparent;color:var(--muted);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:8px 4px;border-radius:14px;cursor:pointer;font-size:10px;font-weight:600;
+  transition:all .2s;
+}
+.nav-btn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn.active{color:var(--fg);background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.nav-btn:active{transform:scale(.95)}
+
+/* ============ HOME / PROFILE HEADER ============ */
+.hero{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  border-radius:20px;padding:18px;color:#fff;position:relative;overflow:hidden;
+  margin-bottom:14px;
+}
+.hero::before{content:"";position:absolute;inset:-40%;background:radial-gradient(circle,rgba(255,255,255,.2),transparent 60%);animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.hero-top{display:flex;justify-content:space-between;align-items:center;position:relative;z-index:2}
+.hero-name{font-size:20px;font-weight:800;letter-spacing:-.5px}
+.hero-lvl{font-size:13px;opacity:.9;font-weight:600}
+.hero-stats{display:flex;gap:8px;margin-top:14px;position:relative;z-index:2}
+.stat-pill{
+  flex:1;background:rgba(0,0,0,.25);backdrop-filter:blur(10px);
+  border-radius:12px;padding:8px 10px;display:flex;flex-direction:column;gap:2px;
+}
+.stat-label{font-size:10px;opacity:.8;text-transform:uppercase;font-weight:700;letter-spacing:.5px}
+.stat-value{font-size:16px;font-weight:800;display:flex;align-items:center;gap:4px}
+
+.xp-bar{height:6px;background:rgba(255,255,255,.25);border-radius:99px;overflow:hidden;margin-top:12px;position:relative;z-index:2}
+.xp-fill{height:100%;background:#fff;border-radius:99px;transition:width .4s ease;width:0}
+
+/* ============ CARDS ============ */
+.section-title{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin:16px 4px 10px;display:flex;align-items:center;gap:6px}
+.section-title:first-child{margin-top:0}
+
+.card{
+  background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+  padding:14px;margin-bottom:10px;cursor:pointer;transition:transform .18s,background .2s;
+  position:relative;overflow:hidden;
+}
+.card:active{transform:scale(.98);background:var(--card2)}
+.card-title{font-size:15px;font-weight:700;margin-bottom:4px}
+.card-desc{font-size:12px;color:var(--muted);line-height:1.4}
+.card-row{display:flex;align-items:center;gap:10px}
+.card-badge{
+  flex:0 0 auto;width:44px;height:44px;border-radius:12px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;place-items:center;font-weight:800;color:#fff;font-size:16px;
+}
+.card-meta{display:flex;gap:10px;margin-top:10px;align-items:center}
+.chip{
+  font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px;
+  background:var(--card2);color:var(--muted);
+}
+.chip.accent{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+.chip.good{background:rgba(61,220,151,.15);color:var(--good)}
+.chip.bad{background:rgba(255,107,122,.15);color:var(--bad)}
+.chip.warn{background:rgba(255,209,102,.15);color:var(--warn)}
+.chip.gold{background:linear-gradient(135deg,#ffd700,#ffb700);color:#4a3500}
+
+.progress-mini{
+  flex:1;height:6px;background:var(--card2);border-radius:99px;overflow:hidden;
+}
+.progress-mini span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:99px;transition:width .4s}
+
+/* Levels grid */
+.levels-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:14px}
+.level-tile{
+  background:var(--card);border:1px solid var(--border);border-radius:12px;
+  padding:10px 4px;text-align:center;cursor:pointer;transition:transform .15s;
+}
+.level-tile:active{transform:scale(.93)}
+.level-num{font-size:16px;font-weight:800}
+.level-name{font-size:9px;color:var(--muted);margin-top:2px;text-transform:uppercase;letter-spacing:.3px}
+.level-tile.locked{opacity:.4}
+.level-tile.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff}
+
+/* Topic list */
+.topic-card .card-badge{background:var(--card2);color:var(--muted);font-size:12px}
+.topic-card.done .card-badge{background:linear-gradient(135deg,var(--good),#10b981);color:#fff}
+.topic-card.locked{opacity:.55;pointer-events:none}
+.lock-icon{position:absolute;top:14px;right:14px;width:16px;height:16px;color:var(--muted)}
+.stars{display:flex;gap:2px;margin-left:auto}
+.star{width:14px;height:14px;color:var(--muted)}
+.star.filled{color:var(--gold)}
+
+/* Topic detail */
+.formula-box{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:20px 14px;margin:10px 0;text-align:center;overflow-x:auto;
+  font-size:20px;
+}
+.formula-box::-webkit-scrollbar{height:4px}
+.formula-box::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px}
+.theory-p{margin-bottom:10px;font-size:14px;line-height:1.6;color:var(--fg);opacity:.9}
+.btn-primary{
+  width:100%;border:none;border-radius:14px;padding:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;
+  font-size:15px;font-weight:700;cursor:pointer;
+  box-shadow:0 6px 18px rgba(109,139,255,.35);
+  transition:transform .15s,box-shadow .2s;
+  margin-top:10px;
+}
+.btn-primary:active{transform:scale(.97);box-shadow:0 2px 6px rgba(109,139,255,.35)}
+.btn-secondary{
+  width:100%;border:1px solid var(--border);border-radius:14px;padding:12px;
+  background:var(--card);color:var(--fg);
+  font-size:14px;font-weight:600;cursor:pointer;margin-top:8px;
+}
+.btn-secondary:active{transform:scale(.98);background:var(--card2)}
+
+/* Exercise */
+.exercise-top{
+  background:var(--card);border-radius:var(--radius);padding:16px;margin-bottom:12px;
+}
+.ex-progress{display:flex;align-items:center;gap:8px;margin-bottom:10px;font-size:12px;color:var(--muted);font-weight:600}
+.ex-progress .bar{flex:1;height:6px;background:var(--card2);border-radius:99px;overflow:hidden}
+.ex-progress .bar span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+.question-box{
+  background:var(--bg2);border-radius:var(--radius);padding:20px 14px;
+  text-align:center;font-size:18px;font-weight:700;margin:10px 0;
+  min-height:70px;display:grid;place-items:center;
+}
+.answers{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.answer-btn{
+  padding:14px 10px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--fg);font-size:16px;font-weight:700;cursor:pointer;
+  transition:all .18s;min-height:54px;
+}
+.answer-btn:active{transform:scale(.96);background:var(--card2)}
+.answer-btn.correct{background:var(--good);color:#fff;border-color:var(--good);animation:pop .4s}
+.answer-btn.wrong{background:var(--bad);color:#fff;border-color:var(--bad);animation:shake .4s}
+.answer-btn:disabled{cursor:not-allowed}
+@keyframes pop{0%{transform:scale(1)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+.answer-single{display:flex;flex-direction:column;gap:8px}
+.input-answer{
+  width:100%;padding:14px;border-radius:12px;border:2px solid var(--border);
+  background:var(--bg2);color:var(--fg);font-size:18px;font-weight:700;text-align:center;
+  outline:none;transition:border-color .2s;font-family:inherit;
+}
+.input-answer:focus{border-color:var(--accent)}
+
+/* Settings */
+.setting-row{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px;background:var(--card);border-radius:12px;margin-bottom:8px;
+}
+.setting-label{font-size:14px;font-weight:600}
+.setting-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.switch{width:44px;height:24px;border-radius:99px;background:var(--card2);position:relative;cursor:pointer;transition:background .2s;border:none;padding:0}
+.switch::after{content:"";position:absolute;top:2px;left:2px;width:20px;height:20px;border-radius:50%;background:#fff;transition:transform .2s}
+.switch.on{background:linear-gradient(135deg,var(--accent),var(--accent2))}
+.switch.on::after{transform:translateX(20px)}
+.theme-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:8px}
+.theme-opt{
+  aspect-ratio:1;border-radius:12px;cursor:pointer;border:3px solid transparent;
+  position:relative;overflow:hidden;transition:transform .15s,border-color .2s;
+}
+.theme-opt:active{transform:scale(.92)}
+.theme-opt.selected{border-color:var(--accent);box-shadow:0 0 0 2px var(--bg)}
+.theme-opt::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--p1),var(--p2))}
+.theme-opt::after{content:"";position:absolute;bottom:0;left:0;right:0;height:40%;background:var(--p3)}
+.theme-opt[data-t="aurora"]{--p1:#6d8bff;--p2:#9b6dff;--p3:#0b0f19}
+.theme-opt[data-t="sunset"]{--p1:#ff7b6d;--p2:#ffb86b;--p3:#1a0f1f}
+.theme-opt[data-t="forest"]{--p1:#4ade80;--p2:#22d3ee;--p3:#0c1512}
+.theme-opt[data-t="ocean"]{--p1:#38bdf8;--p2:#0ea5e9;--p3:#071019}
+.theme-opt[data-t="lava"]{--p1:#ef4444;--p2:#f97316;--p3:#170606}
+.theme-opt[data-t="mint"]{--p1:#10b981;--p2:#06b6d4;--p3:#f0f7f4}
+.theme-opt[data-t="candy"]{--p1:#ec4899;--p2:#a855f7;--p3:#fdf2f8}
+.theme-opt[data-t="graphite"]{--p1:#a1a1aa;--p2:#d4d4d8;--p3:#0c0c0d}
+.theme-opt[data-t="royal"]{--p1:#c084fc;--p2:#fbbf24;--p3:#0f0b24}
+.theme-opt[data-t="dark"]{--p1:#ffffff;--p2:#a0a0a0;--p3:#000000}
+.lang-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.lang-btn{
+  padding:12px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--fg);cursor:pointer;font-weight:600;
+}
+.lang-btn.active{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+
+/* Achievements */
+.ach-card{display:flex;gap:12px;align-items:center}
+.ach-icon{
+  width:48px;height:48px;border-radius:12px;flex:0 0 auto;
+  background:var(--card2);display:grid;place-items:center;font-size:24px;
+}
+.ach-card.unlocked .ach-icon{background:linear-gradient(135deg,var(--gold),#ff9a00)}
+.ach-body{flex:1}
+.ach-prog{margin-top:6px;height:4px;background:var(--card2);border-radius:99px;overflow:hidden}
+.ach-prog span{display:block;height:100%;background:linear-gradient(90deg,var(--good),var(--accent));border-radius:99px}
+
+/* Daily tasks */
+.task-card{display:flex;gap:12px;align-items:center}
+.task-check{
+  width:32px;height:32px;border-radius:50%;flex:0 0 auto;
+  border:2px solid var(--border);display:grid;place-items:center;
+  background:var(--bg2);color:transparent;transition:all .2s;font-weight:800;font-size:14px;
+}
+.task-card.done .task-check{background:var(--good);border-color:var(--good);color:#fff}
+.task-reward{font-weight:700;color:var(--gold);font-size:12px}
+
+/* Result modal */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:100;
+  display:none;align-items:center;justify-content:center;padding:20px;
+  animation:fadeIn .25s;
+}
+.modal-overlay.show{display:flex}
+.modal{
+  background:var(--card);border-radius:20px;padding:24px;width:100%;max-width:380px;
+  border:1px solid var(--border);text-align:center;animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.modal h2{font-size:22px;margin-bottom:8px}
+.modal-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin:16px 0}
+.modal-stat{background:var(--bg2);border-radius:12px;padding:10px 6px}
+.modal-stat .v{font-size:18px;font-weight:800}
+.modal-stat .l{font-size:10px;color:var(--muted);text-transform:uppercase;margin-top:2px}
+
+/* Toast */
+.toast{
+  position:fixed;left:50%;top:20px;transform:translate(-50%,-140%);
+  background:var(--card);border:1px solid var(--border);border-radius:14px;
+  padding:10px 16px;font-weight:700;font-size:13px;z-index:200;
+  transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+  display:flex;align-items:center;gap:8px;box-shadow:var(--shadow);
+}
+.toast.show{transform:translate(-50%,0)}
+.toast.good{border-color:var(--good)}
+.toast.bad{border-color:var(--bad)}
+
+/* misc */
+.row{display:flex;gap:10px}
+.row > *{flex:1}
+.empty{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+.spinner{display:inline-block;width:18px;height:18px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin1 0.8s linear infinite}
+@keyframes spin1{to{transform:rotate(360deg)}}
+
+.exam-banner{
+  background:linear-gradient(135deg,var(--warn),var(--gold));color:#2a1e00;
+  border-radius:16px;padding:14px;margin-bottom:10px;display:flex;gap:10px;align-items:center;
+  cursor:pointer;transition:transform .15s;
+}
+.exam-banner:active{transform:scale(.98)}
+
+/* Fade in for list items */
+.fade-in{animation:fadeInUp .35s both}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+/* Tablet */
+@media (min-width:600px){
+  body{font-size:16px}
+  .content{max-width:720px;margin:0 auto;width:100%;padding-left:24px;padding-right:24px}
+  .answers{grid-template-columns:1fr 1fr}
+  .bottom-nav{left:50%;transform:translateX(-50%);max-width:500px}
+}
+</style>
+</head>
+<body class="theme-aurora">
+
+<div id="app">
+  <!-- HOME -->
+  <section class="screen active" id="screen-home">
+    <div class="header">
+      <h1 id="app-title">Math Quest Academy Pro</h1>
+      <button class="icon-btn" id="btn-settings" aria-label="settings">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3h0a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8v0a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+      </button>
+    </div>
+    <div class="content" id="home-content"></div>
+    <nav class="bottom-nav" id="nav">
+      <button class="nav-btn active" data-screen="home"><svg viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg><span data-i18n="nav_home">Главная</span></button>
+      <button class="nav-btn" data-screen="levels"><svg viewBox="0 0 24 24"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg><span data-i18n="nav_learn">Уроки</span></button>
+      <button class="nav-btn" data-screen="achievements"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg><span data-i18n="nav_ach">Награды</span></button>
+      <button class="nav-btn" data-screen="stats"><svg viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="m7 15 4-4 4 4 6-6"/></svg><span data-i18n="nav_stats">Статы</span></button>
+    </nav>
+  </section>
+
+  <!-- LEVELS -->
+  <section class="screen" id="screen-levels">
+    <div class="header">
+      <button class="icon-btn btn-back" data-target="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h1 data-i18n="levels_title">Уровни и темы</h1>
+      <span></span>
+    </div>
+    <div class="content" id="levels-content"></div>
+  </section>
+
+  <!-- TOPICS -->
+  <section class="screen" id="screen-topics">
+    <div class="header">
+      <button class="icon-btn btn-back" data-target="levels"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h1 id="topics-title">Уровень</h1>
+      <span></span>
+    </div>
+    <div class="content" id="topics-content"></div>
+  </section>
+
+  <!-- TOPIC DETAIL -->
+  <section class="screen" id="screen-topic">
+    <div class="header">
+      <button class="icon-btn btn-back" data-target="topics"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h1 id="topic-title">Тема</h1>
+      <span></span>
+    </div>
+    <div class="content" id="topic-content"></div>
+  </section>
+
+  <!-- EXERCISE -->
+  <section class="screen" id="screen-exercise">
+    <div class="header">
+      <button class="icon-btn btn-back" id="btn-ex-exit"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+      <h1 id="exercise-title">Упражнения</h1>
+      <span></span>
+    </div>
+    <div class="content" id="exercise-content"></div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section class="screen" id="screen-achievements">
+    <div class="header">
+      <button class="icon-btn btn-back" data-target="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h1 data-i18n="ach_title">Достижения</h1>
+      <span></span>
+    </div>
+    <div class="content" id="ach-content"></div>
+  </section>
+
+  <!-- STATS / SETTINGS -->
+  <section class="screen" id="screen-stats">
+    <div class="header">
+      <button class="icon-btn btn-back" data-target="home"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+      <h1 data-i18n="stats_title">Статистика и настройки</h1>
+      <span></span>
+    </div>
+    <div class="content" id="stats-content"></div>
+  </section>
+</div>
+
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-inner"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================
+   Math Quest Academy Pro
+   Single-file Telegram WebApp
+   ============================================================ */
+'use strict';
+
+/* -------- Telegram WebApp -------- */
+const tg = (window.Telegram && window.Telegram.WebApp) || null;
+if (tg) {
+  try { tg.ready(); tg.expand(); } catch(e){}
+  try { tg.setHeaderColor('#0b0f19'); tg.setBackgroundColor('#0b0f19'); } catch(e){}
+}
+const Haptic = {
+  impact(style='light'){ try{ if(state.haptic && tg?.HapticFeedback) tg.HapticFeedback.impactOccurred(style); }catch(e){} },
+  notif(type='success'){ try{ if(state.haptic && tg?.HapticFeedback) tg.HapticFeedback.notificationOccurred(type); }catch(e){} },
+  select(){ try{ if(state.haptic && tg?.HapticFeedback) tg.HapticFeedback.selectionChanged(); }catch(e){} }
+};
+
+/* -------- Sound Engine (soft synthesized UI sounds, no external files) -------- */
+const SoundEngine = (function(){
+  let ctx = null;
+  function getCtx(){
+    if(!ctx){
+      try{ ctx = new (window.AudioContext || window.webkitAudioContext)(); }catch(e){ return null; }
+    }
+    if(ctx && ctx.state === 'suspended'){ try{ ctx.resume(); }catch(e){} }
+    return ctx;
+  }
+  // Unlock/resume audio on first user interaction (required by mobile browsers & Telegram webview)
+  ['pointerdown','touchstart','click'].forEach(evt=>{
+    document.addEventListener(evt, ()=>{ getCtx(); }, {once:true, passive:true});
+  });
+
+  // One soft, filtered sine "note" with a gentle envelope — avoids any harsh/clicky digital edge
+  function note(freq, {dur=0.16, type='sine', gain=0.05, delay=0, glideTo=null, filterFreq=2600}={}){
+    const c = getCtx();
+    if(!c) return;
+    const t0 = c.currentTime + delay;
+    const osc = c.createOscillator();
+    const amp = c.createGain();
+    const filter = c.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = filterFreq;
+    osc.type = type;
+    osc.frequency.setValueAtTime(freq, t0);
+    if(glideTo) osc.frequency.exponentialRampToValueAtTime(glideTo, t0 + dur*0.9);
+    amp.gain.setValueAtTime(0.0001, t0);
+    amp.gain.linearRampToValueAtTime(gain, t0 + 0.015);
+    amp.gain.exponentialRampToValueAtTime(0.0006, t0 + dur);
+    osc.connect(filter); filter.connect(amp); amp.connect(c.destination);
+    osc.start(t0);
+    osc.stop(t0 + dur + 0.03);
+  }
+
+  return {
+    // gentle tap for generic buttons/cards
+    tap(){ if(!state.sound) return; note(540, {dur:.07, type:'sine', gain:.045, filterFreq:2200}); },
+    // airy two-note swoosh for screen navigation
+    select(){ if(!state.sound) return; note(600,{dur:.09,gain:.035}); note(840,{dur:.1,gain:.02,delay:.035}); },
+    // soft mellow click for switches, pitched by on/off
+    toggle(on){ if(!state.sound) return; note(on?720:440,{dur:.09,type:'triangle',gain:.04,filterFreq:1800}); },
+    // gentle rising chime for correct answers
+    correct(){ if(!state.sound) return; note(523.25,{dur:.12,gain:.05}); note(659.25,{dur:.15,gain:.05,delay:.07}); note(783.99,{dur:.22,gain:.04,delay:.14}); },
+    // soft downward tone for wrong answers — never harsh
+    wrong(){ if(!state.sound) return; note(340,{dur:.22,type:'sine',gain:.04,glideTo:230,filterFreq:1400}); },
+    // warm little fanfare for level-ups/achievements/rewards
+    success(){ if(!state.sound) return; [523.25,659.25,783.99,1046.5].forEach((f,i)=>note(f,{dur:.28,gain:.045,delay:i*.09})); },
+    // soft bloom for modals opening
+    open(){ if(!state.sound) return; note(440,{dur:.11,gain:.03}); note(660,{dur:.14,gain:.025,delay:.045}); }
+  };
+})();
+
+// Generic soft tap sound for buttons/cards that don't already trigger a dedicated sound
+document.addEventListener('click', function(e){
+  const target = e.target.closest('button, .card, .level-tile, .theme-opt, .exam-banner');
+  if(!target) return;
+  if(target.classList.contains('nav-btn') || target.classList.contains('answer-btn') || target.classList.contains('switch')) return;
+  SoundEngine.tap();
+}, true);
+
+/* -------- Seeded random (mulberry32) -------- */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function makeRng(seed){ const r = mulberry32(seed); return {
+  next:r,
+  int(min,max){ return Math.floor(r()*(max-min+1))+min; },
+  pick(arr){ return arr[Math.floor(r()*arr.length)]; },
+  shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){const j=Math.floor(r()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;},
+  chance(p){ return r()<p; }
+};}
+
+/* -------- Storage -------- */
+const STORAGE_KEY = 'mathquest_pro_v1';
+const defaultState = {
+  lang: (navigator.language && navigator.language.startsWith('uz')) ? 'uz' : 'ru',
+  theme: 'aurora',
+  xp: 0,
+  coins: 0,
+  lvl: 1,
+  streak: 0,
+  lastActive: null,
+  topics: {}, // id -> { score, stars, completed:bool }
+  achievements: {},
+  dailyDate: null,
+  dailyTasks: [],
+  dailyDone: [],
+  examUnlocked: [1],
+  totalAnswered: 0,
+  correctAnswered: 0,
+  sound: true,
+  haptic: true
+};
+let state = loadState();
+
+function loadState(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if(!raw) return structuredClone(defaultState);
+    return Object.assign(structuredClone(defaultState), JSON.parse(raw));
+  }catch(e){ return structuredClone(defaultState); }
+}
+function saveState(){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }catch(e){}
+}
+
+/* -------- LOCALES -------- */
+const LOCALES = {
+  ru: {
+    app_name: 'Math Quest Academy Pro',
+    nav_home: 'Главная', nav_learn: 'Уроки', nav_ach: 'Награды', nav_stats: 'Статы',
+    level: 'Уровень', levels_title: 'Уровни и темы', topics_of: 'Темы уровня',
+    topics_locked: 'Сначала завершите предыдущий уровень',
+    theory: 'Теория', formula: 'Формула', start_practice: 'Начать практику',
+    practice_of: 'Практика:', question: 'Вопрос', correct: 'Верно!', wrong: 'Неверно',
+    finish: 'Завершить', next: 'Далее', submit: 'Ответить', skip: 'Пропустить',
+    your_answer: 'Ваш ответ', enter_answer: 'Введите ответ',
+    results: 'Результат', result_xp: 'Опыт', result_coins: 'Монеты', result_acc: 'Точность',
+    back_to: 'Вернуться', retry: 'Ещё раз',
+    home_greeting: 'Привет, математик!', home_sub: 'Сегодня отличный день для знаний',
+    home_daily: 'Ежедневные задания', home_exam: 'Экзамен', home_exam_desc: 'Сдайте экзамен и получите награду',
+    daily_complete: 'Задания на сегодня выполнены!',
+    achievements_t: 'Достижения', stats_title: 'Статистика и настройки',
+    settings_lang: 'Язык', settings_theme: 'Тема оформления',
+    settings_sound: 'Звук', settings_haptic: 'Тактильная отдача', settings_reset: 'Сбросить прогресс',
+    settings_reset_desc: 'Все достижения и прогресс будут удалены',
+    reset_confirm: 'Да, сбросить', cancel: 'Отмена', reset_done: 'Прогресс сброшен',
+    stats_total: 'Всего ответов', stats_correct: 'Правильных', stats_accuracy: 'Точность',
+    stats_topics: 'Пройдено тем', stats_xp: 'Всего XP', stats_coins: 'Всего монет',
+    stats_streak: 'Серия дней',
+    locked: 'Заблокировано', unlocked: 'Открыто',
+    of: 'из', correct_a: 'Правильно', wrong_a: 'Неправильно',
+    topic_completed: 'Тема пройдена!', new_level: 'Новый уровень!', streak_days: 'дней подряд',
+    earned_xp: '+{n} XP', earned_coins: '+{n} монет',
+    exam_t: 'Экзамен', exam_locked: 'Экзамен открывается после прохождения всех тем уровня',
+    exam_start: 'Начать экзамен', exam_desc: '20 случайных вопросов, без формул, с наградой',
+    install_hint: 'Добавьте на главный экран для быстрого доступа',
+    continue_learning: 'Продолжить', learn_new: 'Изучать',
+    day: 'День', daily: 'Ежедневно', reward: 'Награда'
+  },
+  uz: {
+    app_name: 'Math Quest Academy Pro',
+    nav_home: 'Bosh sahifa', nav_learn: 'Darslar', nav_ach: 'Mukofotlar', nav_stats: 'Statistika',
+    level: 'Daraja', levels_title: 'Darajalar va mavzular', topics_of: 'Daraja mavzulari',
+    topics_locked: 'Avval oldingi darajani tugating',
+    theory: 'Nazariya', formula: 'Formula', start_practice: 'Mashqni boshlash',
+    practice_of: 'Mashq:', question: 'Savol', correct: "To'g'ri!", wrong: 'Noto‘g‘ri',
+    finish: 'Tugatish', next: 'Keyingi', submit: 'Javob berish', skip: "O'tkazib yuborish",
+    your_answer: 'Javobingiz', enter_answer: 'Javobni kiriting',
+    results: 'Natija', result_xp: 'Tajriba', result_coins: 'Tangalar', result_acc: 'Aniqlik',
+    back_to: 'Ortga', retry: 'Qayta urinish',
+    home_greeting: 'Salom, matematik!', home_sub: "Bugun bilimlar uchun ajoyib kun",
+    home_daily: 'Kundalik vazifalar', home_exam: 'Imtihon', home_exam_desc: "Imtihon topshiring va mukofot oling",
+    daily_complete: 'Bugungi vazifalar bajarildi!',
+    achievements_t: 'Yutuqlar', stats_title: 'Statistika va sozlamalar',
+    settings_lang: 'Til', settings_theme: 'Dizayn mavzusi',
+    settings_sound: 'Ovoz', settings_haptic: 'Sensorli tebranish', settings_reset: "Taraqqiyotni tozalash",
+    settings_reset_desc: "Barcha yutuqlar va taraqqiyot o'chiriladi",
+    reset_confirm: "Ha, tozalash", cancel: 'Bekor qilish', reset_done: "Taraqqiyot tozalandi",
+    stats_total: 'Jami javoblar', stats_correct: "To'g'ri javoblar", stats_accuracy: 'Aniqlik',
+    stats_topics: "O'tilgan mavzular", stats_xp: 'Jami XP', stats_coins: 'Jami tangalar',
+    stats_streak: 'Kunlar ketma-ketligi',
+    locked: 'Bloklangan', unlocked: 'Ochilgan',
+    of: 'dan', correct_a: "To'g'ri", wrong_a: 'Noto‘g‘ri',
+    topic_completed: 'Mavzu tugallandi!', new_level: 'Yangi daraja!', streak_days: 'kun ketma-ket',
+    earned_xp: '+{n} XP', earned_coins: '+{n} tanga',
+    exam_t: 'Imtihon', exam_locked: "Imtihon daraja barcha mavzulari o'tilgach ochiladi",
+    exam_start: "Imtihonni boshlash", exam_desc: "20 ta tasodifiy savol, formulasiz, mukofot bilan",
+    install_hint: "Tez kirish uchun bosh ekranga qo'shing",
+    continue_learning: 'Davom ettirish', learn_new: "O'rganish",
+    day: 'Kun', daily: 'Kundalik', reward: 'Mukofot'
+  }
+};
+function t(key, vars){
+  let s = LOCALES[state.lang][key] ?? LOCALES.ru[key] ?? key;
+  if(vars) for(const k in vars) s = s.replace('{'+k+'}', vars[k]);
+  return s;
+}
+
+/* -------- Level names -------- */
+const LEVEL_NAMES = {
+  ru: ['Новичок','Ученик','Практик','Знаток','Эксперт','Мастер','Гуру','Профессор','Гений','Легенда'],
+  uz: ['Yangi boshlovchi',"O'quvchi",'Amaliyotchi','Bilimdon','Ekspert','Usta','Guru','Professor','Daho','Afsona']
+};
+
+/* ============================================================
+   TOPIC TEMPLATES
+   15 templates generating 100 total topics (10 per level, 10 levels)
+   Each template has localized title/desc/theory and a generator
+   ============================================================ */
+const TEMPLATES = [
+  // -------- 1. Arithmetic / operations --------
+  {
+    id:'addsub', baseCat:'arith',
+    title:{ru:'Сложение и вычитание',uz:"Qo'shish va ayirish"},
+    desc:{ru:'Базовые операции с числами',uz:"Sonlar bilan oddiy amallar"},
+    formula:()=> `a + b = c, \\qquad a - b = d`,
+    theory:{
+      ru:[
+        'Сложение — это арифметическое действие, в котором два числа объединяются в одно новое.',
+        'Вычитание — действие, обратное сложению. Оно показывает, сколько останется, если из одного числа убрать другое.',
+        'При вычитании большее число называется уменьшаемым, меньшее — вычитаемым, а результат — разностью.'
+      ],
+      uz:[
+        "Qo'shish — bu ikkita sonni bitta yangi songa birlashtiruvchi arifmetik amal.",
+        "Ayirish — qo'shishga teskari amal. U bir sondan ikkinchisini olib tashlanganda qancha qolishini ko'rsatadi.",
+        "Ayirishda kattaroq son kamayuvchi, kichigi ayriluvchi, natija esa ayirma deyiladi."
+      ]
+    },
+    gen(rng, p){
+      const range = p.range;
+      const op = rng.chance(0.5)? '+':'-';
+      let a = rng.int(1, range), b = rng.int(1, range);
+      if(op==='-' && b>a)[a,b]=[b,a];
+      const ans = op==='+'? a+b : a-b;
+      const opts = rng.shuffle([ans, ans+rng.int(1,5), ans-rng.int(1,5), ans+rng.int(6,10)]);
+      return { q:`${a} ${op} ${b} = ?`, answer: ans, options: opts.map(String), input:true };
+    }
+  },
+  // -------- 2. Multiplication --------
+  {
+    id:'mul', baseCat:'arith',
+    title:{ru:'Умножение чисел',uz:"Sonlarni ko'paytirish"},
+    desc:{ru:'Таблица умножения и не только',uz:"Ko'paytirish jadvali va boshqalar"},
+    formula:()=> `a \\times b = c`,
+    theory:{
+      ru:[
+        'Умножение — это сложение числа с самим собой несколько раз.',
+        'Результат умножения называется произведением, а умножаемые числа — множителями.',
+        'От перестановки множителей произведение не меняется: a·b = b·a.'
+      ],
+      uz:[
+        "Ko'paytirish — bu sonni o'ziga bir necha marta qo'shish.",
+        "Ko'paytirish natijasi ko'paytma, ko'paytirilayotgan sonlar esa ko'paytuvchilar deyiladi.",
+        "Ko'paytuvchilar o'rni almashsa ham, ko'paytma o'zgarmaydi: a·b = b·a."
+      ]
+    },
+    gen(rng,p){
+      const a=rng.int(2,p.maxA||9), b=rng.int(2,p.maxB||9);
+      const ans=a*b;
+      const opts=rng.shuffle([ans, ans+a, ans-b>0?ans-b:ans+b, a*b+1]);
+      return { q:`${a} × ${b} = ?`, answer:ans, options: opts.map(String), input:true };
+    }
+  },
+  // -------- 3. Division --------
+  {
+    id:'div', baseCat:'arith',
+    title:{ru:'Деление чисел',uz:"Sonlarni bo'lish"},
+    desc:{ru:'Деление и его свойства',uz:"Bo'lish va uning xossalari"},
+    formula:()=> `a : b = c \\quad (a = b \\cdot c)`,
+    theory:{
+      ru:[
+        'Деление — действие, обратное умножению. Оно показывает, сколько раз одно число содержится в другом.',
+        'Делимое — число, которое делят, делитель — число, на которое делят, а результат — частное.',
+        'На ноль делить нельзя. Проверка деления: a = b·c + r, где r — остаток.'
+      ],
+      uz:[
+        "Bo'lish — ko'paytirishga teskari amal. U bir son ikkinchisida necha marta borligini ko'rsatadi.",
+        "Bo'linuvchi — bo'linadigan son, bo'luvchi — bo'linayotgan son, natija esa bo'linma deyiladi.",
+        "Nolga bo'lib bo'lmaydi. Tekshirish: a = b·c + q, bu yerda q — qoldiq."
+      ]
+    },
+    gen(rng,p){
+      const b=rng.int(2,p.max||9);
+      const c=rng.int(2,p.max||9);
+      const a=b*c;
+      const opts=rng.shuffle([c, c+1, c-1>0?c-1:c+2, c+b]);
+      return { q:`${a} : ${b} = ?`, answer:c, options:opts.map(String), input:true };
+    }
+  },
+  // -------- 4. Fractions --------
+  {
+    id:'frac', baseCat:'fraction',
+    title:{ru:'Обыкновенные дроби',uz:'Oddiy kasrlar'},
+    desc:{ru:'Части от целого',uz:"Butunning qismlari"},
+    formula:()=> `\\frac{a}{b}, \\qquad a \\in \\mathbb{N},\\; b \\in \\mathbb{N},\\; a < b`,
+    theory:{
+      ru:[
+        'Дробь — это запись части от целого. Число над чертой — числитель, под чертой — знаменатель.',
+        'Знаменатель показывает, на сколько равных частей разделили целое, а числитель — сколько таких частей взяли.',
+        'Основное свойство дроби: числитель и знаменатель можно умножить или разделить на одно и то же число, не равное нулю — значение дроби не изменится.'
+      ],
+      uz:[
+        "Kasr — butunning bir qismini yozish. Chiziq ustidagi son surat, ostidagi son maxraj.",
+        "Maxraj butun nechta teng qismga bo'linganini, surat esa shuncha qismlardan nechtasi olinganini ko'rsatadi.",
+        "Kasrning asosiy xossasi: surat va maxrajni nolga teng bo'lmagan bir xil songa ko'paytirish yoki bo'lish mumkin — kasr qiymati o'zgarmaydi."
+      ]
+    },
+    gen(rng,p){
+      const a=rng.int(1,p.m||6), b=rng.int(a+1,p.m?Math.max(p.m+1,a+3):10);
+      const k=rng.int(2,5);
+      const n=b*k;
+      const ans = a*k;
+      return { q:(state.lang==='ru'?`Сколько будет ${a}/${b} от числа ${n}?`:`${n} sonining ${a}/${b} qismi nechaga teng?`),
+        answer: ans, options: rng.shuffle([ans, ans+k, ans>k?ans-k:ans+b, ans+b]).filter((v,i,arr)=>arr.indexOf(v)===i).slice(0,4).map(String), input: true };
+    }
+  },
+  // -------- 5. Percentages --------
+  {
+    id:'percent', baseCat:'ratio',
+    title:{ru:'Проценты',uz:'Foizlar'},
+    desc:{ru:'Сотые доли величин',uz:"Miqdorning yuzdan bir qismlari"},
+    formula:()=> `p\\% = \\frac{p}{100}`,
+    theory:{
+      ru:[
+        'Процент — это одна сотая часть числа. 1% = 1/100 = 0,01.',
+        'Чтобы найти процент от числа, нужно умножить число на процент и разделить на 100.',
+        'Чтобы найти, сколько процентов одно число составляет от другого, нужно первое разделить на второе и умножить на 100.'
+      ],
+      uz:[
+        'Foiz — sonning yuzdan bir qismi. 1% = 1/100 = 0,01.',
+        "Sondan foizni topish uchun sonni foizga ko'paytirib, 100 ga bo'lish kerak.",
+        "Bir son ikkinchisining necha foizini tashkil qilishini topish uchun birinchi sonni ikkinchisiga bo'lib, 100 ga ko'paytirish kerak."
+      ]
+    },
+    gen(rng,p){
+      const bases=[100,200,50,150,250,400,80,60,120,300];
+      const pers=[10,20,25,50,5,15,30,40,75];
+      const base=rng.pick(bases);
+      const per=rng.pick(pers);
+      const ans=base*per/100;
+      const opts = [ans, ans+per, ans>per?ans-per:ans+per*2, ans+base/10, ans+5];
+      return { q:(state.lang==='ru'?`Сколько будет ${per}% от ${base}?`:`${base} ning ${per}% necha bo'ladi?`),
+        answer:ans, options: rng.shuffle(opts).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).map(v=>String(v%1?+v.toFixed(1):v)), input:true};
+    }
+  },
+  // -------- 6. Linear equations --------
+  {
+    id:'linear', baseCat:'algebra',
+    title:{ru:'Линейные уравнения',uz:'Chiziqli tenglamalar'},
+    desc:{ru:'Уравнения вида ax+b=c',uz:'ax+b=c ko‘rinishidagi tenglamalar'},
+    formula:()=> `ax + b = c \\quad \\Rightarrow \\quad x = \\frac{c - b}{a}`,
+    theory:{
+      ru:[
+        'Линейное уравнение — это уравнение, в котором неизвестная стоит в первой степени.',
+        'Чтобы решить уравнение, нужно перенести известные слагаемые в одну сторону, а неизвестные — в другую, не забывая менять знак.',
+        'Проверка: подставьте найденный корень в исходное уравнение. Если обе части равны, решение верное.'
+      ],
+      uz:[
+        "Chiziqli tenglama — noma'lum birinchi darajada bo'lgan tenglama.",
+        "Tenglamani yechish uchun ma'lum hadlarni bir tomonga, noma'lumlarni esa ikkinchi tomonga o'tkazish kerak, ishora o'zgartiriladi.",
+        "Tekshirish: topilgan ildizni tenglamaga qo'ying. Agar ikkala tomon teng bo'lsa, yechim to'g'ri."
+      ]
+    },
+    gen(rng,p){
+      const max=p.max||12;
+      const a=rng.int(1,max-3)+1;
+      const x=rng.int(1,max);
+      const b=rng.int(-10,10);
+      const c=a*x+b;
+      return { q:`${a}x ${b>=0?'+':''} ${b} = ${c}  →  x = ?`, answer:x,
+        options:rng.shuffle([x, x+1, x>1?x-1:x+2, x+a]).map(String), input:true };
+    }
+  },
+  // -------- 7. Powers / exponents --------
+  {
+    id:'power', baseCat:'algebra',
+    title:{ru:'Степени чисел',uz:'Sonlar darajasi'},
+    desc:{ru:'Возведение в степень',uz:'Sonni darajaga ko‘tarish'},
+    formula:()=> `a^n = \\underbrace{a \\cdot a \\cdot \\ldots \\cdot a}_{n}`,
+    theory:{
+      ru:[
+        'Степень числа a с показателем n — это произведение n множителей, каждый из которых равен a.',
+        'Любое число в степени 0 равно 1 (кроме 0⁰ — выражение не определено).',
+        'При умножении степеней с одинаковым основанием показатели складываются: a^m · a^n = a^{m+n}.'
+      ],
+      uz:[
+        "a sonining n ko'rsatkichli darajasi — har biri a ga teng bo'lgan n ta ko'paytuvchining ko'paytmasi.",
+        "0-darajadagi har qanday son 1 ga teng (0⁰ dan tashqari — aniqlanmagan).",
+        "Asoslari bir xil darajalar ko'paytirilganda ko'rsatkichlar qo'shiladi: a^m · a^n = a^{m+n}."
+      ]
+    },
+    gen(rng,p){
+      const base=rng.int(2,p.max||7);
+      const exp=rng.int(2,p.exp||4);
+      const ans=Math.pow(base,exp);
+      const opts=rng.shuffle([ans, ans+base, ans-base, ans+base*base]);
+      return { q:`${base}^${exp} = ?`, answer:ans, options:opts.map(String), input:true };
+    }
+  },
+  // -------- 8. Roots (square roots) --------
+  {
+    id:'root', baseCat:'algebra',
+    title:{ru:'Квадратные корни',uz:'Kvadrat ildizlar'},
+    desc:{ru:'Извлечение квадратного корня',uz:'Kvadrat ildiz chiqarish'},
+    formula:()=> `\\sqrt{a} = b \\quad \\Leftrightarrow \\quad b^2 = a`,
+    theory:{
+      ru:[
+        'Квадратный корень из числа a — это такое неотрицательное число b, что b² = a.',
+        'Корень из произведения равен произведению корней: √(a·b) = √a · √b.',
+        'Корень из отрицательного числа в области действительных чисел не определён.'
+      ],
+      uz:[
+        "a sonidan kvadrat ildiz — shunday manfiy bo'lmagan b sonki, b² = a.",
+        "Ko'paytma ildizi ko'paytuvchilar ildizlari ko'paytmasiga teng: √(a·b) = √a · √b.",
+        "Manfiy sondan ildiz haqiqiy sonlar sohasida aniqlanmagan."
+      ]
+    },
+    gen(rng,p){
+      const a=rng.int(2,p.max||12);
+      const ans=a*a;
+      const opts=rng.shuffle([a, a+1, a>2?a-1:a+2, a*2]);
+      return { q:`√${ans} = ?`, answer:a, options:opts.map(String), input:true };
+    }
+  },
+  // -------- 9. Geometry: Pythagoras --------
+  {
+    id:'pyth', baseCat:'geom',
+    title:{ru:'Теорема Пифагора',uz:'Pifagor teoremasi'},
+    desc:{ru:'Стороны прямоугольного треугольника',uz:"To'g'ri burchakli uchburchak tomonlari"},
+    formula:()=> `a^2 + b^2 = c^2`,
+    theory:{
+      ru:[
+        'В прямоугольном треугольнике сумма квадратов катетов равна квадрату гипотенузы.',
+        'Гипотенуза — самая длинная сторона, лежит против прямого угла.',
+        'Теорема верна только для прямоугольных треугольников; в египетском треугольнике 3-4-5 равенство 9+16=25 выполняется.'
+      ],
+      uz:[
+        "To'g'ri burchakli uchburchakda katetlar kvadratlari yig'indisi gipotenuza kvadratiga teng.",
+        "Gipotenuza — eng uzun tomon, to'g'ri burchakka qarshi yotadi.",
+        "Teorema faqat to'g'ri burchakli uchburchaklar uchun to'g'ri; 3-4-5 Misr uchburchagida 9+16=25 tenglik bajariladi."
+      ]
+    },
+    gen(rng,p){
+      const triples=[[3,4,5],[5,12,13],[6,8,10],[8,15,17],[7,24,25],[9,12,15],[10,24,26],[12,16,20],[15,20,25],[20,21,29]];
+      const t=rng.pick(triples);
+      const which=rng.int(0,2);
+      const labels=['a','b','c'];
+      if(which===2){
+        return { q:(state.lang==='ru'?`Катеты ${t[0]} и ${t[1]}. Найдите гипотенузу.`:`Katetlar ${t[0]} va ${t[1]}. Gipotenuzani toping.`),
+          answer:t[2], options:rng.shuffle([t[2], t[0]+t[1], t[2]+1, t[0]*t[1]]).map(String), input:true };
+      } else {
+        const known = which===0?1:0;
+        return { q:(state.lang==='ru'?`Катет ${t[which]} и гипотенуза ${t[2]}. Найдите второй катет.`:`Katet ${t[which]} va gipotenuza ${t[2]}. Ikkinchi katetni toping.`),
+          answer:t[known], options:rng.shuffle([t[known], t[known]+1, t[known]>1?t[known]-1:t[known]+2, t[known]*2]).map(String), input:true };
+      }
+    }
+  },
+  // -------- 10. Areas (rectangle, triangle, circle) --------
+  {
+    id:'area', baseCat:'geom',
+    title:{ru:'Площади фигур',uz:'Figuralar yuzi'},
+    desc:{ru:'Площадь прямоугольника, треугольника, круга',uz:"To'g'ri to'rtburchak, uchburchak, doira yuzi"},
+    formula:()=> `S_{\\square}=ab,\\quad S_{\\triangle}=\\tfrac{1}{2}ah,\\quad S_{\\bigcirc}=\\pi r^2`,
+    theory:{
+      ru:[
+        'Площадь прямоугольника равна произведению его сторон: S = a·b.',
+        'Площадь треугольника равна половине произведения основания на высоту: S = ½·a·h.',
+        'Площадь круга: S = π·r², где r — радиус, π ≈ 3,14.'
+      ],
+      uz:[
+        "To'g'ri to'rtburchak yuzi tomonlari ko'paytmasiga teng: S = a·b.",
+        "Uchburchak yuzi asos va balandlik ko'paytmasining yarmiga teng: S = ½·a·h.",
+        "Doira yuzi: S = π·r², bunda r — radius, π ≈ 3,14."
+      ]
+    },
+    gen(rng,p){
+      const kind=rng.int(0,2);
+      if(kind===0){
+        const a=rng.int(2,15), b=rng.int(2,15);
+        return { q:(state.lang==='ru'?`Прямоугольник со сторонами ${a} и ${b}. Найдите площадь.`:`Tomonlari ${a} va ${b} bo'lgan to'g'ri to'rtburchak yuzini toping.`),
+          answer:a*b, options:rng.shuffle([a*b, a+b, 2*(a+b), a*b/2]).map(String), input:true };
+      } else if(kind===1){
+        const a=rng.int(4,20), h=rng.int(2,12);
+        const ans=a*h/2;
+        const opts = [ans, a*h, a+h, a*h*2, ans*3];
+        return { q:(state.lang==='ru'?`Треугольник: основание ${a}, высота ${h}. Площадь?`:`Uchburchak: asos ${a}, balandlik ${h}. Yuzi?`),
+          answer:ans, options: rng.shuffle(opts).filter((v,i,ar)=>ar.indexOf(v)===i).slice(0,4).map(v=>String(v%1?+v.toFixed(1):v)), input:true };
+      } else {
+        const r=rng.int(2,10);
+        const ans=Math.PI*r*r;
+        const opts = [+ans.toFixed(1), +(2*Math.PI*r).toFixed(1), r*r, +(Math.PI*r).toFixed(1), ans+5];
+        return { q:(state.lang==='ru'?`Радиус круга равен ${r}. Площадь? (π≈3.14)`:`Doira radiusi ${r}. Yuzi? (π≈3.14)`),
+          answer:+ans.toFixed(1), options: rng.shuffle(opts).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).map(v=>String(v%1?+v.toFixed(1):v)), input:true };
+      }
+    }
+  },
+  // -------- 11. Perimeters / circumference --------
+  {
+    id:'perim', baseCat:'geom',
+    title:{ru:'Периметры и окружность',uz:'Perimetr va aylana uzunligi'},
+    desc:{ru:'Периметр фигур, длина окружности',uz:'Figur perimetri, aylana uzunligi'},
+    formula:()=> `P_{\\square}=2(a+b),\\quad P=2\\pi r,\\quad P_{\\triangle}=a+b+c`,
+    theory:{
+      ru:[
+        'Периметр — это сумма длин всех сторон фигуры.',
+        'Периметр прямоугольника P = 2(a+b), квадрата P = 4a.',
+        'Длина окружности L = 2πr, где r — радиус, π ≈ 3,14.'
+      ],
+      uz:[
+        'Perimetr — figura barcha tomonlari uzunliklari yig‘indisi.',
+        "To'g'ri to'rtburchak perimetri P = 2(a+b), kvadrat P = 4a.",
+        'Aylana uzunligi L = 2πr, bunda r — radius, π ≈ 3,14.'
+      ]
+    },
+    gen(rng,p){
+      const kind=rng.int(0,2);
+      if(kind===0){
+        const a=rng.int(2,15),b=rng.int(2,15);
+        return { q:(state.lang==='ru'?`Прямоугольник: ${a} и ${b}. Периметр?`:`To'g'ri to'rtburchak: ${a} va ${b}. Perimetr?`),
+          answer:2*(a+b), options:rng.shuffle([2*(a+b), a+b, a*b, 2*a+b]).map(String), input:true };
+      } else if(kind===1){
+        const a=rng.int(2,10),b=rng.int(2,10),c=rng.int(2,10);
+        return { q:(state.lang==='ru'?`Треугольник со сторонами ${a}, ${b}, ${c}. Периметр?`:`Tomonlari ${a}, ${b}, ${c} bo'lgan uchburchak perimetri?`),
+          answer:a+b+c, options:rng.shuffle([a+b+c, a*b*c, (a+b+c)/2, a*b+c]).map(String), input:true };
+      } else {
+        const r=rng.int(2,10);
+        const ans=2*Math.PI*r;
+        const opts = [+ans.toFixed(1), +(Math.PI*r*r).toFixed(1), 2*r, 4*r, +(Math.PI*r).toFixed(1)];
+        return { q:(state.lang==='ru'?`Радиус ${r}. Длина окружности? (π≈3.14)`:`Radius ${r}. Aylana uzunligi? (π≈3.14)`),
+          answer:+ans.toFixed(1), options: rng.shuffle(opts).filter((v,i,a)=>a.indexOf(v)===i).slice(0,4).map(v=>String(v%1?+v.toFixed(1):v)), input:true };
+      }
+    }
+  },
+  // -------- 12. Equations of the second degree (simple x² = a) --------
+  {
+    id:'quad', baseCat:'algebra',
+    title:{ru:'Квадратные уравнения',uz:'Kvadrat tenglamalar'},
+    desc:{ru:'Простейшие квадратные уравнения',uz:'Oddiy kvadrat tenglamalar'},
+    formula:()=> `x^2 = a \\; (a\\ge0) \\Rightarrow x = \\pm\\sqrt{a}`,
+    theory:{
+      ru:[
+        'Квадратное уравнение — уравнение вида ax² + bx + c = 0, где старший коэффициент a ≠ 0.',
+        'Дискриминант D = b² − 4ac определяет количество корней: D > 0 — два корня, D = 0 — один, D < 0 — нет действительных корней.',
+        'Формула корней: x = (−b ± √D) / (2a).'
+      ],
+      uz:[
+        "Kvadrat tenglama — ax² + bx + c = 0 ko'rinishidagi tenglama, bosh koeffitsiyent a ≠ 0.",
+        "Diskriminant D = b² − 4ac ildizlar sonini aniqlaydi: D > 0 — ikkita ildiz, D = 0 — bitta, D < 0 — haqiqiy ildiz yo'q.",
+        "Ildizlar formulasi: x = (−b ± √D) / (2a)."
+      ]
+    },
+    gen(rng,p){
+      const x=rng.int(2,p.max||12);
+      return { q:`x² = ${x*x}  →  |x| = ?`, answer:x,
+        options:rng.shuffle([x, x+1, x>2?x-1:x+2, x*x]).map(String), input:true };
+    }
+  },
+  // -------- 13. Progressions (arithmetic) --------
+  {
+    id:'arith-prog', baseCat:'seq',
+    title:{ru:'Арифметическая прогрессия',uz:'Arifmetik progressiya'},
+    desc:{ru:'Последовательности с постоянной разностью',uz:"Ayirmasi o'zgarmas ketma-ketliklar"},
+    formula:()=> `a_n = a_1 + (n-1)d, \\quad S_n = \\tfrac{n}{2}(a_1+a_n)`,
+    theory:{
+      ru:[
+        'Арифметическая прогрессия — последовательность, в которой каждое следующее число больше предыдущего на одно и то же число d (разность).',
+        'Формула n-го члена: aₙ = a₁ + (n−1)·d.',
+        'Сумма n первых членов: Sₙ = n/2 · (a₁ + aₙ).'
+      ],
+      uz:[
+        "Arifmetik progressiya — har bir keyingi son avvalgisidan bir xil d songa (ayirma) farq qiluvchi ketma-ketlik.",
+        "n-had formulasi: aₙ = a₁ + (n−1)·d.",
+        "Birinchi n ta had yig'indisi: Sₙ = n/2 · (a₁ + aₙ)."
+      ]
+    },
+    gen(rng,p){
+      const a1=rng.int(1,10), d=rng.int(1,5), n=rng.int(4,10);
+      const ans=a1+(n-1)*d;
+      return { q:(state.lang==='ru'?`a₁=${a1}, d=${d}. Найдите a_${n}.`:`a₁=${a1}, d=${d}. a_${n} ni toping.`),
+        answer:ans, options:rng.shuffle([ans, ans+d, ans-d, ans+a1]).map(String), input:true };
+    }
+  },
+  // -------- 14. Geometry: angles / triangles --------
+  {
+    id:'angles', baseCat:'geom',
+    title:{ru:'Углы и треугольники',uz:'Burchaklar va uchburchaklar'},
+    desc:{ru:'Сумма углов, смежные и вертикальные углы',uz:'Burchaklar yig‘indisi, qo‘shni va vertikal burchaklar'},
+    formula:()=> `\\alpha + \\beta + \\gamma = 180^{\\circ}`,
+    theory:{
+      ru:[
+        'Сумма углов треугольника всегда равна 180°.',
+        'Два угла называются смежными, если они имеют общую сторону, а их не-общие стороны составляют прямую линию. В сумме они дают 180°.',
+        'Вертикальные углы равны между собой.'
+      ],
+      uz:[
+        "Uchburchak burchaklari yig'indisi doimo 180° ga teng.",
+        "Ikki burchak, agar ular umumiy tomonga ega bo'lsa va umumiy bo'lmagan tomonlari to'g'ri chiziq hosil qilsa, qo'shni burchaklar deyiladi. Ular yig'indisi 180°.",
+        "Vertikal burchaklar o'zaro teng."
+      ]
+    },
+    gen(rng,p){
+      const a=rng.int(20,90), b=rng.int(20,180-a-10);
+      const c=180-a-b;
+      const opts=rng.shuffle([c, 90, a+b, 180+a]);
+      return { q:(state.lang==='ru'?`Два угла треугольника: ${a}° и ${b}°. Найдите третий.`:`Uchburchakning ikki burchagi: ${a}° va ${b}°. Uchinchisini toping.`),
+        answer:c, options:opts.map(String), input:true };
+    }
+  },
+  // -------- 15. Logics / patterns --------
+  {
+    id:'logic', baseCat:'logic',
+    title:{ru:'Числовые закономерности',uz:'Son qonuniyatlari'},
+    desc:{ru:'Продолжите числовой ряд',uz:"Son qatorini davom ettiring"},
+    formula:()=> `a_1,\\; a_2,\\; a_3,\\; \\ldots,\\; a_n,\\; \\ldots \\quad (a_n\\text{ — общий член})`,
+    theory:{
+      ru:[
+        'Числовая последовательность задаётся правилом: каждый следующий элемент вычисляется из предыдущих.',
+        'Простейшие примеры: арифметическая прогрессия (постоянная разность), геометрическая (постоянное отношение), квадраты и степени.',
+        'Чтобы распознать закономерность, найдите разности или отношения между соседними членами.'
+      ],
+      uz:[
+        "Sonli ketma-ketlik qoida bilan beriladi: har bir keyingi had avvalgilaridan hisoblanadi.",
+        "Oddiy misollar: arifmetik progressiya (o'zgarmas ayirma), geometrik (o'zgarmas nisbat), kvadratlar va darajalar.",
+        "Qonuniyatni aniqlash uchun qo'shni hadlar orasidagi ayirma yoki nisbatni toping."
+      ]
+    },
+    gen(rng,p){
+      const kind=rng.int(0,2);
+      if(kind===0){ // arith
+        const a1=rng.int(1,10), d=rng.int(2,6);
+        const seq=[a1, a1+d, a1+2*d, a1+3*d];
+        const next=a1+4*d;
+        return { q:(state.lang==='ru'?`Продолжите ряд: ${seq.join(', ')}, ?`:`Qatorni davom ettiring: ${seq.join(', ')}, ?`),
+          answer:next, options:rng.shuffle([next, next-d, next+d, next+2*d]).map(String), input:true };
+      } else if(kind===1){ // geom
+        const a1=rng.int(1,4), q=rng.int(2,3);
+        const seq=[a1, a1*q, a1*q*q, a1*q*q*q];
+        const next=seq[3]*q;
+        return { q:(state.lang==='ru'?`Продолжите ряд: ${seq.join(', ')}, ?`:`Qatorni davom ettiring: ${seq.join(', ')}, ?`),
+          answer:next, options:rng.shuffle([next, seq[2]*q+q, next/q, next+q]).map(String), input:true };
+      } else { // squares
+        const start=rng.int(1,3);
+        const seq=[]; for(let i=0;i<4;i++) seq.push((start+i)*(start+i));
+        const next=(start+4)*(start+4);
+        return { q:(state.lang==='ru'?`Продолжите ряд: ${seq.join(', ')}, ?`:`Qatorni davom ettiring: ${seq.join(', ')}, ?`),
+          answer:next, options:rng.shuffle([next, next-2, next+2, seq[3]*2]).map(String), input:true };
+      }
+    }
+  }
+];
+
+/* -------- Generate 100 topics -------- */
+function generateAllTopics(){
+  // Each level gets 10 topics. Difficulty scales with level.
+  // Distribute templates across levels: each template appears ~6-7 times with varying parameters.
+  const topics = [];
+  const perLevel = 10;
+  const levels = 10;
+
+  // Parameter profiles by level
+  function paramsFor(tpl, level, variant){
+    // level is 1..10
+    const L = level;
+    const p = {};
+    switch(tpl.id){
+      case 'addsub': p.range = 10 + L*8; break;
+      case 'mul': p.maxA = Math.min(5 + L, 20); p.maxB = Math.min(5 + L, 20); break;
+      case 'div': p.max = Math.min(6 + L, 20); break;
+      case 'frac': p.m = Math.min(4 + Math.floor(L/2), 12); break;
+      case 'percent': p.m = L; break;
+      case 'linear': p.max = 5 + L; break;
+      case 'power': p.max = Math.min(3 + Math.floor(L/2), 10); p.exp = Math.min(2 + Math.floor(L/3), 5); break;
+      case 'root': p.max = Math.min(4 + L, 20); break;
+      case 'pyth': p.v = variant; break;
+      case 'area': p.v = variant; break;
+      case 'perim': p.v = variant; break;
+      case 'quad': p.max = Math.min(4 + L, 20); break;
+      case 'arith-prog': p.v = variant; break;
+      case 'angles': p.v = variant; break;
+      case 'logic': p.v = variant; break;
+    }
+    return p;
+  }
+
+  // Topic name suffixes by level (to distinguish variations)
+  const suffix = {
+    ru: [
+      'базовый уровень','начальный курс','простые примеры','первые задачи',
+      'средний уровень','стандартные задачи','с углублением',
+      'повышенная сложность','продвинутый уровень','мастер-класс'
+    ],
+    uz: [
+      'boshlang‘ich','oddiy misollar','birinchi masalalar',
+      "o'rta daraja","standart masalalar",'chuqurlashtirilgan',
+      'murakkab daraja','yuqori daraja','ekspert-daraja','master-klass'
+    ]
+  };
+
+  // Distribute templates per level in a round-robin so we have variety
+  // We'll build an assignment array of length 100 (10 levels * 10)
+  // Each of 15 templates appears at least 6 times, some 7.
+  const order = [];
+  for(let i=0;i<100;i++) order.push(TEMPLATES[i % TEMPLATES.length]);
+  // shuffle per level but deterministic
+  const gRng = makeRng(42);
+  for(let lv=1; lv<=levels; lv++){
+    const slice = order.slice((lv-1)*perLevel, lv*perLevel);
+    // choose unique distribution
+    const chosen = gRng.shuffle(slice);
+    for(let i=0;i<perLevel;i++){
+      const tpl = chosen[i];
+      const params = paramsFor(tpl, lv, i);
+      topics.push({
+        id: `L${lv}_T${i+1}_${tpl.id}`,
+        level: lv,
+        templateId: tpl.id,
+        tplIdx: TEMPLATES.indexOf(tpl),
+        params: params,
+        seed: lv*1000 + i*37 + TEMPLATES.indexOf(tpl)*7,
+        titleKey: tpl.title,
+        descKey: tpl.desc,
+        suffixIdx: lv-1
+      });
+    }
+  }
+  return topics;
+}
+const ALL_TOPICS = generateAllTopics();
+
+/* ============================================================
+   ACHIEVEMENTS
+   ============================================================ */
+const ACHIEVEMENTS = [
+  {id:'first_step', icon:'🎯',
+    name:{ru:'Первый шаг',uz:'Birinchi qadam'},
+    desc:{ru:'Решите первый пример',uz:'Birinchi misolni yeching'},
+    check:s=>s.totalAnswered>=1, target:1, getProgress:s=>Math.min(s.totalAnswered,1)},
+  {id:'ten_correct', icon:'✅',
+    name:{ru:'Десятка',uz:'O‘nlik'},
+    desc:{ru:'10 правильных ответов',uz:"10 ta to'g'ri javob"},
+    check:s=>s.correctAnswered>=10, target:10, getProgress:s=>Math.min(s.correctAnswered,10)},
+  {id:'hundred', icon:'💯',
+    name:{ru:'Сотня',uz:'Yuzlik'},
+    desc:{ru:'100 правильных ответов',uz:"100 ta to'g'ri javob"},
+    check:s=>s.correctAnswered>=100, target:100, getProgress:s=>Math.min(s.correctAnswered,100)},
+  {id:'five_topics', icon:'📚',
+    name:{ru:'Пытливый ум',uz:"Qiziquvchan aql"},
+    desc:{ru:'Пройдите 5 тем',uz:"5 ta mavzuni o'ting"},
+    check:s=>topicsDone(s)>=5, target:5, getProgress:s=>Math.min(topicsDone(s),5)},
+  {id:'all_level1', icon:'🥉',
+    name:{ru:'Бронза',uz:'Bronza'},
+    desc:{ru:'Завершите 1 уровень',uz:'1-darajani tugating'},
+    check:s=>topicsDone(s)>=10, target:10, getProgress:s=>Math.min(topicsDone(s),10)},
+  {id:'all_level5', icon:'🥈',
+    name:{ru:'Серебро',uz:'Kumush'},
+    desc:{ru:'Завершите 5 уровень',uz:'5-darajani tugating'},
+    check:s=>topicsDone(s)>=50, target:50, getProgress:s=>Math.min(topicsDone(s),50)},
+  {id:'all_level10', icon:'🥇',
+    name:{ru:'Золото',uz:'Oltin'},
+    desc:{ru:'Завершите 10 уровень',uz:'10-darajani tugating'},
+    check:s=>topicsDone(s)>=100, target:100, getProgress:s=>Math.min(topicsDone(s),100)},
+  {id:'streak_3', icon:'🔥',
+    name:{ru:'Разогрев',uz:'Isinish'},
+    desc:{ru:'Серия 3 дня',uz:'3 kunlik ketma-ketlik'},
+    check:s=>s.streak>=3, target:3, getProgress:s=>Math.min(s.streak,3)},
+  {id:'streak_7', icon:'⚡',
+    name:{ru:'Неделя',uz:'Bir hafta'},
+    desc:{ru:'Серия 7 дней',uz:'7 kunlik ketma-ketlik'},
+    check:s=>s.streak>=7, target:7, getProgress:s=>Math.min(s.streak,7)},
+  {id:'coins_100', icon:'💰',
+    name:{ru:'Копилка',uz:'Kopilka'},
+    desc:{ru:'Накопите 100 монет',uz:"100 tona to'plang"},
+    check:s=>s.coins>=100, target:100, getProgress:s=>Math.min(s.coins,100)}
+];
+function topicsDone(s){ return Object.values(s.topics).filter(t=>t.completed).length; }
+
+/* ============================================================
+   DAILY TASKS
+   ============================================================ */
+const DAILY_DEFS = [
+  {id:'ans5', ru:'Решите 5 примеров', uz:'5 ta misol yeching', target:5, reward:{xp:20,coins:15},
+    check:(s,c)=>(c.dailyProgress?.ans5||0)>=5},
+  {id:'ans15', ru:'Решите 15 примеров', uz:'15 ta misol yeching', target:15, reward:{xp:50,coins:40},
+    check:(s,c)=>(c.dailyProgress?.ans15||0)>=15},
+  {id:'topic1', ru:'Пройдите одну тему', uz:'Bitta mavzuni tugating', target:1, reward:{xp:30,coins:25},
+    check:(s,c)=>(c.dailyProgress?.topic1||0)>=1},
+  {id:'perfect', ru:'Идеальная тема (10/10)', uz:'A’lo mavzu (10/10)', target:1, reward:{xp:60,coins:50},
+    check:(s,c)=>(c.dailyProgress?.perfect||0)>=1},
+  {id:'coins30', ru:'Заработайте 30 монет', uz:'30 tona ishlang', target:30, reward:{xp:25,coins:10},
+    check:(s,c)=>(c.dailyProgress?.coins||0)>=30},
+  {id:'streak', ru:'Сохраните серию', uz:'Ketma-ketlikni saqlang', target:1, reward:{xp:15,coins:10},
+    check:(s,c)=>c.dailyProgress?.loginToday?1:0 >= 1}
+];
+
+function ensureDaily(){
+  const today = new Date().toISOString().slice(0,10);
+  if(state.dailyDate !== today){
+    state.dailyDate = today;
+    state.dailyDone = [];
+    // pick 3 tasks deterministic per day
+    const r = makeRng(hashStr(today));
+    state.dailyTasks = r.shuffle(DAILY_DEFS).slice(0,3).map(d=>({id:d.id, progress:0, done:false}));
+    state.dailyProgress = { loginToday: 0 };
+    saveState();
+  }
+  if(!state.dailyProgress) state.dailyProgress = {};
+}
+function hashStr(s){ let h=2166136261; for(let i=0;i<s.length;i++){ h^=s.charCodeAt(i); h=Math.imul(h,16777619);} return h>>>0; }
+
+function updateDailyProgress(kind, amount=1){
+  ensureDaily();
+  // Map external kind to storage key (coins30 uses 'coins' for accumulation)
+  const storeKey = kind==='coins30' ? 'coins' : kind;
+  state.dailyProgress[storeKey] = (state.dailyProgress[storeKey]||0) + amount;
+  for(const td of state.dailyTasks){
+    const def = DAILY_DEFS.find(d=>d.id===td.id);
+    if(def && !state.dailyDone.includes(td.id)){
+      let prog = 0;
+      switch(def.id){
+        case 'ans5': prog=Math.min(state.dailyProgress.ans5||0,5); break;
+        case 'ans15': prog=Math.min(state.dailyProgress.ans15||0,15); break;
+        case 'topic1': prog=Math.min(state.dailyProgress.topic1||0,1); break;
+        case 'perfect': prog=Math.min(state.dailyProgress.perfect||0,1); break;
+        case 'coins30': prog=Math.min(state.dailyProgress.coins||0,30); break;
+        case 'streak': prog= state.dailyProgress.loginToday?1:0; break;
+      }
+      td.progress = prog;
+      if(def.check(state, {dailyProgress: state.dailyProgress})){
+        td.done = true;
+        if(!state.dailyDone.includes(td.id)){
+          state.dailyDone.push(td.id);
+          state.xp += def.reward.xp;
+          state.coins += def.reward.coins;
+          toast(t('earned_xp',{n:def.reward.xp})+' · '+t('earned_coins',{n:def.reward.coins}), 'good');
+          Haptic.notif('success');
+          SoundEngine.success();
+          checkLevelUp();
+          checkAchievements();
+        }
+      }
+    }
+  }
+  saveState();
+}
+
+/* ============================================================
+   XP / LEVELS / ACHIEVEMENTS
+   ============================================================ */
+function xpForLevel(l){ return 100 * Math.pow(1.25, l-1) | 0; }
+function addXP(amount){
+  state.xp += amount;
+  checkLevelUp();
+}
+function checkLevelUp(){
+  while(state.xp >= xpForLevel(state.lvl)){
+    state.xp -= xpForLevel(state.lvl);
+    state.lvl++;
+    state.coins += 50;
+    toast(t('new_level')+': '+state.lvl, 'good');
+    Haptic.notif('success');
+    SoundEngine.success();
+  }
+  saveState();
+}
+function checkAchievements(){
+  for(const a of ACHIEVEMENTS){
+    if(!state.achievements[a.id] && a.check(state)){
+      state.achievements[a.id] = true;
+      state.coins += 25;
+      toast('🏆 '+(a.name[state.lang]||a.name.ru), 'good');
+      Haptic.notif('success');
+      SoundEngine.success();
+    }
+  }
+  saveState();
+}
+function updateStreak(){
+  const today = new Date().toISOString().slice(0,10);
+  if(state.lastActive === today) return;
+  const y = new Date(); y.setDate(y.getDate()-1);
+  const yest = y.toISOString().slice(0,10);
+  if(state.lastActive === yest) state.streak++;
+  else state.streak = 1;
+  state.lastActive = today;
+  state.dailyProgress = state.dailyProgress||{};
+  state.dailyProgress.loginToday = 1;
+  saveState();
+}
+
+/* ============================================================
+   TOPIC PRACTICE SESSION
+   ============================================================ */
+function buildExercises(topic, count=10){
+  const tpl = TEMPLATES[topic.tplIdx];
+  const rng = makeRng(topic.seed);
+  const ex = [];
+  for(let i=0;i<count;i++){
+    const exseed = topic.seed + i*131;
+    const r = makeRng(exseed);
+    ex.push(tpl.gen(r, topic.params));
+  }
+  return ex;
+}
+function buildExam(level, count=20){
+  // combine all topics of level
+  const topics = ALL_TOPICS.filter(x=>x.level===level);
+  const allEx = [];
+  const r = makeRng(Date.now());
+  for(const tp of topics){
+    const exs = buildExercises(tp, 2);
+    allEx.push(...exs);
+  }
+  return r.shuffle(allEx).slice(0,count);
+}
+
+let currentSession = null;
+let lastSessionCtx = null;
+
+function startSession(topics, mode='practice', title=''){
+  if(!Array.isArray(topics)) topics = [topics];
+  let exercises = [];
+  if(mode==='exam'){
+    exercises = buildExam(topics[0].level);
+  } else {
+    for(const tp of topics){
+      exercises.push(...buildExercises(tp, 10));
+    }
+  }
+  currentSession = {
+    mode,
+    title,
+    exercises,
+    index: 0,
+    correct: 0,
+    answered: 0,
+    topicId: topics.length===1 ? topics[0].id : null,
+    topic: topics.length===1 ? topics[0] : null,
+    earnedCoins:0, earnedXp:0
+  };
+  switchScreen('exercise');
+  renderExercise();
+}
+
+/* ============================================================
+   RENDERING / NAV
+   ============================================================ */
+const screens = ['home','levels','topics','topic','exercise','achievements','stats'];
+let currentScreen = 'home';
+let prevScreen = 'home';
+let currentLevel = 1;
+let currentTopic = null;
+
+function switchScreen(name){
+  prevScreen = currentScreen;
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active','back');
+    if(s.id === 'screen-'+name) s.classList.add('active');
+  });
+  window.scrollTo(0,0);
+  document.querySelectorAll('.content').forEach(c=>c.scrollTop=0);
+  Haptic.select();
+  SoundEngine.select();
+  // refresh bottom nav
+  document.querySelectorAll('.nav-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.screen===name);
+  });
+  if(name==='home') renderHome();
+  if(name==='levels') renderLevels();
+  if(name==='topics') renderTopics();
+  if(name==='topic' && currentTopic) renderTopic();
+  if(name==='achievements') renderAchievements();
+  if(name==='stats') renderStats();
+}
+
+document.querySelectorAll('.btn-back').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    const tgt = btn.dataset.target;
+    if(tgt) switchScreen(tgt);
+    else switchScreen('home');
+  });
+});
+document.getElementById('btn-ex-exit').addEventListener('click', ()=>{
+  if(!currentSession) { switchScreen('home'); return; }
+  showModal(buildExitModal());
+});
+
+document.querySelectorAll('.nav-btn').forEach(b=>{
+  b.addEventListener('click', ()=>switchScreen(b.dataset.screen));
+});
+document.getElementById('btn-settings').addEventListener('click', ()=>switchScreen('stats'));
+
+/* -------- Render helpers -------- */
+function el(tag, cls, html){
+  const e = document.createElement(tag);
+  if(cls) e.className = cls;
+  if(html!==undefined) e.innerHTML = html;
+  return e;
+}
+function frag(){ return document.createDocumentFragment(); }
+
+/* -------- HOME -------- */
+function renderHome(){
+  const host = document.getElementById('home-content');
+  host.innerHTML = '';
+  // apply theme class to body
+  document.body.className = 'theme-'+state.theme;
+  if(tg?.colorScheme === 'dark' && state.theme === 'aurora'){
+    // keep default
+  }
+
+  const nextLvlXp = xpForLevel(state.lvl);
+  const pct = Math.min(100, (state.xp/nextLvlXp)*100);
+  const streakStr = state.streak>0 ? state.streak + ' ' + t('streak_days') : '';
+
+  const hero = el('div','hero');
+  hero.innerHTML = `
+    <div class="hero-top">
+      <div>
+        <div class="hero-name">${t('home_greeting')}</div>
+        <div class="hero-lvl">${t('level')} ${state.lvl} · ${LEVEL_NAMES[state.lang][Math.min(state.lvl-1,9)]}</div>
+      </div>
+      <div class="hero-lvl">${streakStr? '🔥 '+streakStr:''}</div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-pill"><div class="stat-label">XP</div><div class="stat-value">${state.xp}<span style="opacity:.6;font-size:11px">/${nextLvlXp}</span></div></div>
+      <div class="stat-pill"><div class="stat-label">🪙</div><div class="stat-value">${state.coins}</div></div>
+      <div class="stat-pill"><div class="stat-label">${t('stats_topics')}</div><div class="stat-value">${topicsDone(state)}/100</div></div>
+    </div>
+    <div class="xp-bar"><div class="xp-fill" style="width:${pct}%"></div></div>
+  `;
+  host.appendChild(hero);
+
+  // Daily section
+  ensureDaily();
+  host.appendChild(el('div','section-title',`🔥 ${t('home_daily')}`));
+  for(const td of state.dailyTasks){
+    const def = DAILY_DEFS.find(d=>d.id===td.id);
+    const title = state.lang==='ru' ? def.ru : def.uz;
+    const done = state.dailyDone.includes(td.id) || td.done;
+    const card = el('div','card task-card'+(done?' done':''));
+    card.innerHTML = `
+      <div class="task-check">${done?'✓':''}</div>
+      <div class="card-body" style="flex:1">
+        <div class="card-title" style="font-size:14px">${title}</div>
+        <div class="card-desc">${Math.min(td.progress||0, def.target)}/${def.target}</div>
+        <div class="card-meta">
+          <div class="progress-mini"><span style="width:${Math.min(100,(td.progress||0)/def.target*100)}%"></span></div>
+          <span class="task-reward">+${def.reward.xp}XP · +${def.reward.coins}🪙</span>
+        </div>
+      </div>
+    `;
+    host.appendChild(card);
+  }
+
+  // Exam
+  host.appendChild(el('div','section-title',`🎓 ${t('home_exam')}`));
+  const nextExamLv = state.examUnlocked[state.examUnlocked.length-1] || 1;
+  const canExam = isLevelCompleted(nextExamLv) || nextExamLv===1;
+  const examCard = el('div','exam-banner');
+  examCard.innerHTML = `
+    <div style="flex:1">
+      <div style="font-weight:800;font-size:15px">${t('exam_t')} · ${t('level')} ${nextExamLv}</div>
+      <div style="font-size:12px;opacity:.85">${canExam ? t('exam_desc') : t('exam_locked')}</div>
+    </div>
+    <div style="font-size:22px">${canExam?'→':'🔒'}</div>
+  `;
+  if(canExam){
+    examCard.addEventListener('click', ()=>{
+      const levelTopics = ALL_TOPICS.filter(x=>x.level===nextExamLv);
+      startSession(levelTopics[0], 'exam');
+    });
+  }
+  host.appendChild(examCard);
+
+  // Continue learning - pick next incomplete topic
+  host.appendChild(el('div','section-title',`📖 ${t('continue_learning')}`));
+  const nextTopic = ALL_TOPICS.find(tp=>!state.topics[tp.id]?.completed);
+  if(nextTopic){
+    const tpl = TEMPLATES[nextTopic.tplIdx];
+    const c = el('div','card');
+    c.innerHTML = `
+      <div class="card-row">
+        <div class="card-badge">${nextTopic.level}</div>
+        <div style="flex:1">
+          <div class="card-title">${tpl.title[state.lang]}</div>
+          <div class="card-desc">${t('level')} ${nextTopic.level} · ${LEVEL_NAMES[state.lang][nextTopic.level-1]}</div>
+        </div>
+        <div style="font-size:22px">→</div>
+      </div>
+    `;
+    c.addEventListener('click', ()=>openTopic(nextTopic));
+    host.appendChild(c);
+  } else {
+    host.appendChild(el('div','empty','🎉 Все темы пройдены!'));
+  }
+}
+
+function isLevelCompleted(lv){
+  const topics = ALL_TOPICS.filter(x=>x.level===lv);
+  return topics.every(tp=>state.topics[tp.id]?.completed);
+}
+function isLevelUnlocked(lv){
+  if(lv===1) return true;
+  return isLevelCompleted(lv-1);
+}
+
+/* -------- Levels -------- */
+function renderLevels(){
+  const host = document.getElementById('levels-content');
+  host.innerHTML = '';
+  const grid = el('div','levels-grid');
+  for(let lv=1; lv<=10; lv++){
+    const unlocked = isLevelUnlocked(lv);
+    const done = isLevelCompleted(lv);
+    const tile = el('div','level-tile'+(unlocked?'':' locked')+(done?' active':''));
+    tile.innerHTML = `
+      <div class="level-num">${done?'✓':(unlocked?lv:'🔒')}</div>
+      <div class="level-name">${LEVEL_NAMES[state.lang][lv-1]}</div>
+    `;
+    if(unlocked) tile.addEventListener('click', ()=>{ currentLevel=lv; renderTopics(); switchScreen('topics'); });
+    grid.appendChild(tile);
+  }
+  host.appendChild(grid);
+  host.appendChild(el('div','section-title', t('levels_title')));
+
+  for(let lv=1; lv<=10; lv++){
+    const unlocked = isLevelUnlocked(lv);
+    const topics = ALL_TOPICS.filter(x=>x.level===lv);
+    const completed = topics.filter(tp=>state.topics[tp.id]?.completed).length;
+    const c = el('div','card'+(unlocked?'':' locked'));
+    c.innerHTML = `
+      <div class="card-row">
+        <div class="card-badge" style="${completed===10?'background:linear-gradient(135deg,var(--good),#10b981)':''}">${lv}</div>
+        <div style="flex:1">
+          <div class="card-title">${t('level')} ${lv} · ${LEVEL_NAMES[state.lang][lv-1]}</div>
+          <div class="card-desc">${completed}/10 · ${completed===10?'✓':(unlocked?'':'🔒 '+t('topics_locked'))}</div>
+          <div class="card-meta">
+            <div class="progress-mini"><span style="width:${completed*10}%"></span></div>
+          </div>
+        </div>
+        <div style="font-size:20px;color:var(--muted)">${unlocked?'→':'🔒'}</div>
+      </div>
+    `;
+    if(unlocked) c.addEventListener('click', ()=>{ currentLevel=lv; renderTopics(); switchScreen('topics'); });
+    host.appendChild(c);
+  }
+}
+
+/* -------- Topics list for level -------- */
+function renderTopics(){
+  const host = document.getElementById('topics-content');
+  host.innerHTML = '';
+  document.getElementById('topics-title').textContent = `${t('level')} ${currentLevel} · ${LEVEL_NAMES[state.lang][currentLevel-1]}`;
+  const list = ALL_TOPICS.filter(x=>x.level===currentLevel);
+  const prevLevelDone = currentLevel===1 || isLevelCompleted(currentLevel-1);
+  if(!prevLevelDone){
+    host.appendChild(el('div','card','<div class="card-desc" style="text-align:center">🔒 '+t('topics_locked')+'</div>'));
+    return;
+  }
+  for(let i=0;i<list.length;i++){
+    const tp = list[i];
+    const tpl = TEMPLATES[tp.tplIdx];
+    const s = state.topics[tp.id];
+    const done = s?.completed;
+    const stars = done ? Math.min(3, Math.max(1, Math.round((s.score/10)*3))) : 0;
+    const card = el('div','card topic-card'+(done?' done':''));
+    const starHTML = Array.from({length:3},(_,j)=>`<svg class="star ${j<stars?'filled':''}" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15 9 22 9.5 17 14.5 18.5 22 12 18 5.5 22 7 14.5 2 9.5 9 9"/></svg>`).join('');
+    card.innerHTML = `
+      <div class="card-row">
+        <div class="card-badge">${done?'✓':String(i+1).padStart(2,'0')}</div>
+        <div style="flex:1;min-width:0">
+          <div class="card-title">${tpl.title[state.lang]}</div>
+          <div class="card-desc">${tpl.desc[state.lang]}</div>
+        </div>
+      </div>
+      <div class="card-meta">
+        <div class="progress-mini"><span style="width:${done?100:0}%"></span></div>
+        <div class="stars">${starHTML}</div>
+      </div>
+    `;
+    card.addEventListener('click', ()=>openTopic(tp));
+    host.appendChild(card);
+  }
+}
+
+/* -------- Topic detail -------- */
+function openTopic(tp){
+  currentTopic = tp;
+  currentLevel = tp.level;
+  switchScreen('topic');
+  renderTopic();
+}
+function renderTopic(){
+  const tp = currentTopic;
+  if(!tp) return;
+  const tpl = TEMPLATES[tp.tplIdx];
+  const host = document.getElementById('topic-content');
+  document.getElementById('topic-title').textContent = tpl.title[state.lang];
+  host.innerHTML = '';
+
+  // meta
+  const meta = el('div','card');
+  const s = state.topics[tp.id];
+  meta.innerHTML = `
+    <div class="card-row">
+      <div class="card-badge">${tp.level}</div>
+      <div style="flex:1">
+        <div class="card-title">${tpl.title[state.lang]}</div>
+        <div class="card-desc">${tpl.desc[state.lang]}</div>
+        <div class="card-meta">
+          <span class="chip accent">${t('level')} ${tp.level}</span>
+          ${s?.completed ? `<span class="chip good">${t('correct_a')}: ${s.score}/10</span>` : `<span class="chip">10 ${t('question',{}).toLowerCase()+'s'}</span>`}
+        </div>
+      </div>
+    </div>
+  `;
+  host.appendChild(meta);
+
+  // theory
+  host.appendChild(el('div','section-title',`📖 ${t('theory')}`));
+  const theoryBox = el('div','card');
+  theoryBox.innerHTML = tpl.theory[state.lang].map(p=>`<p class="theory-p">${p}</p>`).join('');
+  host.appendChild(theoryBox);
+
+  // formula
+  host.appendChild(el('div','section-title',`🧮 ${t('formula')}`));
+  const fbox = el('div','formula-box');
+  host.appendChild(fbox);
+  const fLatex = tpl.formula(tp.params);
+  renderKatex(fbox, fLatex);
+
+  // start button
+  const btn = el('button','btn-primary');
+  btn.textContent = t('start_practice');
+  btn.addEventListener('click', ()=>{
+    startSession(tp, 'practice', tpl.title[state.lang]);
+  });
+  host.appendChild(btn);
+
+  if(s?.completed){
+    const btn2 = el('button','btn-secondary');
+    btn2.textContent = t('retry');
+    btn2.addEventListener('click', ()=>startSession(tp, 'practice', tpl.title[state.lang]));
+    host.appendChild(btn2);
+  }
+}
+
+/* -------- KaTeX renderer -------- */
+const katexQueue = [];
+function renderKatex(el, latex){
+  if(!window.katex){
+    katexQueue.push([el, latex]);
+    return;
+  }
+  try {
+    katex.render(latex, el, { displayMode:true, throwOnError:false, trust:false });
+  } catch(e){
+    el.textContent = latex;
+  }
+}
+window.addEventListener('load', ()=>{
+  const iv = setInterval(()=>{
+    if(window.katex){
+      clearInterval(iv);
+      while(katexQueue.length){
+        const [e,l] = katexQueue.shift();
+        renderKatex(e,l);
+      }
+    }
+  },50);
+});
+
+/* -------- Exercise rendering -------- */
+function renderExercise(){
+  const host = document.getElementById('exercise-content');
+  document.getElementById('exercise-title').textContent = currentSession.mode==='exam' ? t('exam_t') : (currentSession.title||t('start_practice'));
+  host.innerHTML = '';
+  const ses = currentSession;
+  if(!ses) return;
+  const total = ses.exercises.length;
+  const ex = ses.exercises[ses.index];
+  if(!ex){ finishSession(); return; }
+
+  const wrap = el('div','fade-in');
+  wrap.innerHTML = `
+    <div class="exercise-top">
+      <div class="ex-progress">
+        <span>${ses.index+1} / ${total}</span>
+        <div class="bar"><span style="width:${(ses.index/total)*100}%"></span></div>
+        <span>${ses.correct}✓</span>
+      </div>
+      <div class="question-box" id="qbox">${ex.q}</div>
+    </div>
+  `;
+  host.appendChild(wrap);
+
+  if(ex.options){
+    const grid = el('div','answers');
+    for(const opt of ex.options){
+      const btn = el('button','answer-btn');
+      btn.textContent = opt;
+      btn.addEventListener('click', ()=>handleAnswer(btn, opt, opt==String(ex.answer)));
+      grid.appendChild(btn);
+    }
+    host.appendChild(grid);
+  } else {
+    const box = el('div','answer-single');
+    const input = el('input','input-answer');
+    input.type = 'text';
+    input.inputMode = 'numeric';
+    input.placeholder = t('enter_answer');
+    const btn = el('button','btn-primary');
+    btn.textContent = t('submit');
+    const submit = ()=>{
+      const val = input.value.trim().replace(',','.');
+      if(val==='') return;
+      const num = parseFloat(val);
+      let ok = false;
+      if(!isNaN(num)){
+        if(typeof ex.answer === 'number'){
+          ok = Math.abs(num - ex.answer) < 0.6;
+        } else {
+          ok = String(val) === String(ex.answer);
+        }
+      } else {
+        ok = String(val).toLowerCase() === String(ex.answer).toLowerCase();
+      }
+      handleAnswer(btn, val, ok, input);
+    };
+    btn.addEventListener('click', submit);
+    input.addEventListener('keydown', e=>{ if(e.key==='Enter') submit(); });
+    box.appendChild(input);
+    box.appendChild(btn);
+    host.appendChild(box);
+    setTimeout(()=>input.focus(), 250);
+  }
+}
+function handleAnswer(btn, chosen, correct, input){
+  const ses = currentSession;
+  if(ses.answeredLocked) return;
+  ses.answeredLocked = true;
+  ses.answered++;
+  state.totalAnswered++;
+
+  // disable buttons
+  if(!input){
+    const all = btn.parentElement.querySelectorAll('.answer-btn');
+    all.forEach(b=>{
+      b.disabled = true;
+      if(b.textContent == String(ses.exercises[ses.index].answer)) b.classList.add('correct');
+    });
+    if(correct) btn.classList.add('correct'); else btn.classList.add('wrong');
+  } else {
+    input.disabled = true;
+    btn.disabled = true;
+    if(correct) btn.style.background = 'var(--good)';
+    else btn.style.background = 'var(--bad)';
+  }
+
+  if(correct){
+    ses.correct++;
+    state.correctAnswered++;
+    Haptic.notif('success');
+    SoundEngine.correct();
+    const xpG = currentSession.mode==='exam' ? 6 : 4;
+    const cG = currentSession.mode==='exam' ? 3 : 2;
+    ses.earnedXp += xpG;
+    ses.earnedCoins += cG;
+    state.xp += xpG;
+    state.coins += cG;
+    updateDailyProgress('ans5');
+    updateDailyProgress('ans15');
+    updateDailyProgress('coins30', cG);
+  } else {
+    Haptic.notif('error');
+    SoundEngine.wrong();
+    // ans5/ans15 count total answers? We count only correct. But allow attempt counting:
+    state.dailyProgress.ans5 = state.dailyProgress.ans5||0;
+    state.dailyProgress.ans15 = state.dailyProgress.ans15||0;
+  }
+
+  checkLevelUp();
+  checkAchievements();
+  saveState();
+
+  setTimeout(()=>{
+    ses.index++;
+    ses.answeredLocked = false;
+    if(ses.index >= ses.exercises.length){
+      finishSession();
+    } else {
+      renderExercise();
+    }
+  }, correct ? 700 : 1000);
+}
+
+function finishSession(){
+  const ses = currentSession;
+  // Save context for retry
+  lastSessionCtx = ses.mode==='exam'
+    ? { mode:'exam', level: ses.topic?.level || currentLevel }
+    : { mode:'practice', topic: ses.topic };
+  const total = ses.exercises.length;
+  const acc = total>0 ? Math.round(ses.correct/total*100) : 0;
+  // Bonus coins for high score
+  let bonusCoins = 0, bonusXp = 0;
+  if(ses.mode === 'practice' && ses.topicId){
+    const tp = ses.topic;
+    const stars = Math.min(3, Math.max(0, Math.round(acc/100*3)));
+    state.topics[tp.id] = {
+      completed: acc>=50 || (state.topics[tp.id]?.completed),
+      score: Math.max(state.topics[tp.id]?.score||0, ses.correct),
+      stars: Math.max(state.topics[tp.id]?.stars||0, stars)
+    };
+    if(acc === 100){
+      state.dailyProgress.perfect = (state.dailyProgress.perfect||0)+1;
+      updateDailyProgress('perfect');
+    }
+    if(acc>=50){
+      state.dailyProgress.topic1 = (state.dailyProgress.topic1||0)+1;
+      updateDailyProgress('topic1');
+    }
+    bonusXp = Math.round(acc*0.5);
+    bonusCoins = Math.round(acc*0.3);
+    state.xp += bonusXp;
+    state.coins += bonusCoins;
+    // unlock exam for this level if all topics done
+    if(isLevelCompleted(tp.level) && !state.examUnlocked.includes(tp.level+1) && tp.level<10){
+      state.examUnlocked.push(tp.level+1);
+      toast('🎓 '+ (state.lang==='ru'?'Открыт новый экзамен!':'Yangi imtihon ochildi!'), 'good');
+    }
+  }
+  if(ses.mode === 'exam'){
+    // big bonus
+    const passed = acc >= 70;
+    if(passed){
+      bonusXp = 200; bonusCoins = 150;
+      state.xp += bonusXp; state.coins += bonusCoins;
+    } else {
+      bonusXp = 50; bonusCoins = 20;
+      state.xp += bonusXp; state.coins += bonusCoins;
+    }
+  }
+  checkLevelUp();
+  checkAchievements();
+  updateStreak();
+  updateDailyProgress('streak');
+  saveState();
+
+  showModal(buildResultModal(ses, acc, bonusXp, bonusCoins));
+  currentSession = null;
+}
+
+/* -------- Modal -------- */
+function showModal(html){
+  const m = document.getElementById('modal');
+  document.getElementById('modal-inner').innerHTML = html;
+  m.classList.add('show');
+  Haptic.impact('medium');
+  SoundEngine.open();
+}
+function hideModal(){ document.getElementById('modal').classList.remove('show'); }
+document.getElementById('modal').addEventListener('click', e=>{
+  if(e.target.id==='modal') hideModal();
+});
+function buildResultModal(ses, acc, bonusXp, bonusCoins){
+  const totalXP = ses.earnedXp + bonusXp;
+  const totalC = ses.earnedCoins + bonusCoins;
+  const examMsg = ses.mode==='exam' ? (acc>=70 ? (state.lang==='ru'?'🏆 Экзамен сдан!':'🏆 Imtihon topshirildi!') : (state.lang==='ru'?'❌ Не сдали (нужно 70%)':'❌ Topshirmadingiz (70% kerak)')) : '';
+  return `
+    <h2>${ses.mode==='exam'? t('exam_t') : (ses.correct===ses.exercises.length?'🏆 '+t('topic_completed') : t('results'))}</h2>
+    ${examMsg?`<div style="color:var(--muted);font-size:13px">${examMsg}</div>`:''}
+    <div class="modal-stats">
+      <div class="modal-stat"><div class="v">${ses.correct}/${ses.exercises.length}</div><div class="l">${t('correct_a')}</div></div>
+      <div class="modal-stat"><div class="v">${acc}%</div><div class="l">${t('result_acc')}</div></div>
+      <div class="modal-stat"><div class="v">+${totalXP}</div><div class="l">${t('result_xp')}</div></div>
+    </div>
+    <div style="color:var(--gold);font-weight:700;margin-bottom:10px">🪙 +${totalC}</div>
+    <button class="btn-primary" id="m-ok">${t('back_to')}</button>
+    <button class="btn-secondary" id="m-retry">${t('retry')}</button>
+  `;
+}
+document.addEventListener('click', e=>{
+  if(e.target.id==='m-ok'){
+    hideModal();
+    if(lastSessionCtx?.mode==='practice' && lastSessionCtx.topic){
+      currentTopic = lastSessionCtx.topic;
+      switchScreen('topic');
+      renderTopic();
+    } else {
+      switchScreen('home');
+    }
+  }
+  if(e.target.id==='m-retry'){
+    hideModal();
+    if(currentSession) return;
+    if(lastSessionCtx){
+      if(lastSessionCtx.mode==='exam'){
+        const lt = ALL_TOPICS.find(x=>x.level===lastSessionCtx.level);
+        if(lt) startSession(lt, 'exam');
+      } else if(lastSessionCtx.topic){
+        startSession(lastSessionCtx.topic, 'practice', TEMPLATES[lastSessionCtx.topic.tplIdx].title[state.lang]);
+      }
+    } else {
+      switchScreen('home');
+    }
+  }
+});
+function buildExitModal(){
+  return `
+    <h2>${state.lang==='ru'?'Выйти?':'Chiqish?'}</h2>
+    <p style="color:var(--muted);margin:10px 0 20px">${state.lang==='ru'?'Прогресс будет потерян.':'Taraqqiyot saqlanmaydi.'}</p>
+    <button class="btn-primary" id="m-exit-yes">${state.lang==='ru'?'Выйти':'Chiqish'}</button>
+    <button class="btn-secondary" id="m-exit-no">${t('cancel')}</button>
+  `;
+}
+document.addEventListener('click', e=>{
+  if(e.target.id==='m-exit-yes'){ hideModal(); currentSession=null; switchScreen('home'); }
+  if(e.target.id==='m-exit-no'){ hideModal(); }
+});
+
+/* -------- Achievements screen -------- */
+function renderAchievements(){
+  const host = document.getElementById('ach-content');
+  host.innerHTML = '';
+  host.appendChild(el('div','section-title', t('achievements_t')));
+  for(const a of ACHIEVEMENTS){
+    const done = !!state.achievements[a.id];
+    const prog = a.getProgress(state);
+    const card = el('div','card ach-card'+(done?' unlocked':''));
+    card.innerHTML = `
+      <div class="ach-icon">${a.icon}</div>
+      <div class="ach-body">
+        <div class="card-title" style="font-size:14px">${a.name[state.lang]}</div>
+        <div class="card-desc">${a.desc[state.lang]}</div>
+        <div class="ach-prog"><span style="width:${Math.min(100,prog/a.target*100)}%"></span></div>
+        <div class="card-desc" style="margin-top:4px">${Math.min(prog,a.target)}/${a.target} · +25🪙</div>
+      </div>
+    `;
+    host.appendChild(card);
+  }
+}
+
+/* -------- Stats / settings -------- */
+function renderStats(){
+  const host = document.getElementById('stats-content');
+  host.innerHTML = '';
+  const acc = state.totalAnswered>0 ? Math.round(state.correctAnswered/state.totalAnswered*100) : 0;
+  const stats = [
+    [t('stats_total'), state.totalAnswered],
+    [t('stats_correct'), state.correctAnswered],
+    [t('stats_accuracy'), acc+'%'],
+    [t('stats_topics'), topicsDone(state)+'/100'],
+    [t('stats_xp'), state.xp + ` (${t('level')} ${state.lvl})`],
+    [t('stats_coins'), state.coins],
+    [t('stats_streak'), state.streak]
+  ];
+  const grid = el('div');
+  grid.style.display='grid'; grid.style.gridTemplateColumns='1fr 1fr'; grid.style.gap='8px';
+  for(const [l,v] of stats){
+    const c = el('div','card');
+    c.style.padding='12px'; c.style.textAlign='center';
+    c.innerHTML = `<div style="font-size:11px;color:var(--muted);text-transform:uppercase;font-weight:700;letter-spacing:.5px">${l}</div><div style="font-size:20px;font-weight:800;margin-top:4px">${v}</div>`;
+    grid.appendChild(c);
+  }
+  host.appendChild(grid);
+
+  host.appendChild(el('div','section-title', t('settings_lang')));
+  const langRow = el('div','lang-row');
+  for(const lg of ['ru','uz']){
+    const b = el('button','lang-btn'+(state.lang===lg?' active':''));
+    b.textContent = lg==='ru'?'Русский':'O‘zbekcha';
+    b.addEventListener('click', ()=>{
+      state.lang = lg; saveState(); renderStats(); renderHome(); applyLocales();
+      document.documentElement.lang = lg;
+    });
+    langRow.appendChild(b);
+  }
+  host.appendChild(langRow);
+
+  host.appendChild(el('div','section-title', t('settings_theme')));
+  const themeGrid = el('div','theme-grid');
+  const themes = ['aurora','sunset','forest','ocean','lava','mint','candy','graphite','royal','dark'];
+  for(const th of themes){
+    const b = el('div','theme-opt'+(state.theme===th?' selected':''));
+    b.dataset.t = th;
+    b.addEventListener('click', ()=>{
+      state.theme = th; saveState();
+      document.body.className = 'theme-'+th;
+      if(tg){ try{ tg.setHeaderColor(getComputedStyle(document.body).getPropertyValue('--bg').toString().trim()); }catch(e){} }
+      renderStats();
+    });
+    themeGrid.appendChild(b);
+  }
+  host.appendChild(themeGrid);
+
+  // Sound toggle
+  const srow = el('div','setting-row');
+  srow.innerHTML = `
+    <div><div class="setting-label">${t('settings_sound')}</div><div class="setting-sub">${state.lang==='ru'?'Мягкие звуки интерфейса':'Muloyim interfeys ovozlari'}</div></div>
+    <button class="switch ${state.sound?'on':''}" id="sw-sound"></button>
+  `;
+  host.appendChild(srow);
+
+  // Haptic toggle
+  const hrow = el('div','setting-row');
+  hrow.innerHTML = `
+    <div><div class="setting-label">${t('settings_haptic')}</div><div class="setting-sub">Telegram WebApp</div></div>
+    <button class="switch ${state.haptic?'on':''}" id="sw-haptic"></button>
+  `;
+  host.appendChild(hrow);
+
+  // Reset
+  const rrow = el('div','setting-row');
+  rrow.innerHTML = `
+    <div><div class="setting-label" style="color:var(--bad)">${t('settings_reset')}</div><div class="setting-sub">${t('settings_reset_desc')}</div></div>
+  `;
+  const rb = el('button','btn-secondary');
+  rb.style.flex='0'; rb.style.margin='0'; rb.style.padding='10px 14px'; rb.textContent = '↻';
+  rb.addEventListener('click', ()=>{
+    showModal(`
+      <h2>${t('settings_reset')}</h2>
+      <p style="color:var(--muted);margin:10px 0 20px">${t('settings_reset_desc')}</p>
+      <button class="btn-primary" id="m-reset-yes" style="background:linear-gradient(135deg,var(--bad),#ff4444)">${t('reset_confirm')}</button>
+      <button class="btn-secondary" id="m-reset-no">${t('cancel')}</button>
+    `);
+  });
+  rrow.appendChild(rb);
+  host.appendChild(rrow);
+
+  // Bind sound switch
+  const swSound = document.getElementById('sw-sound');
+  if(swSound) swSound.addEventListener('click', ()=>{
+    state.sound = !state.sound;
+    saveState();
+    SoundEngine.toggle(state.sound);
+    renderStats();
+  });
+
+  // Bind haptic switch
+  const sw = document.getElementById('sw-haptic');
+  if(sw) sw.addEventListener('click', ()=>{
+    state.haptic = !state.haptic;
+    saveState(); renderStats();
+    SoundEngine.toggle(state.haptic);
+  });
+}
+document.addEventListener('click', e=>{
+  if(e.target.id==='m-reset-yes'){
+    localStorage.removeItem(STORAGE_KEY);
+    state = loadState();
+    hideModal();
+    toast(t('reset_done'), 'good');
+    switchScreen('home');
+  }
+  if(e.target.id==='m-reset-no') hideModal();
+});
+
+/* -------- Apply static locales (for elements with data-i18n) -------- */
+function applyLocales(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    el.textContent = t(el.dataset.i18n);
+  });
+  document.getElementById('app-title').textContent = t('app_name');
+  document.title = t('app_name');
+}
+
+/* -------- Toast -------- */
+let toastTimer = null;
+function toast(msg, type){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show'+(type?' '+type:'');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{ t.classList.remove('show'); }, 2200);
+}
+
+/* -------- Visibility (streak) -------- */
+document.addEventListener('visibilitychange', ()=>{
+  if(!document.hidden) updateStreak();
+});
+
+/* ============================================================
+   INIT
+   ============================================================ */
+(function init(){
+  updateStreak();
+  ensureDaily();
+  // Try to match telegram theme
+  if(tg?.themeParams){
+    try{
+      const scheme = tg.colorScheme;
+      if(scheme && state.theme==='aurora'){
+        // keep our premium themes regardless — user can switch
+      }
+    }catch(e){}
+  }
+  // If Telegram's user locale is Uzbek, switch (only if first run)
+  try{
+    if(tg?.initDataUnsafe?.user?.language_code){
+      const code = tg.initDataUnsafe.user.language_code;
+      if(!localStorage.getItem(STORAGE_KEY) && code.startsWith('uz')) state.lang='uz';
+    }
+  }catch(e){}
+
+  document.body.className = 'theme-'+state.theme;
+  applyLocales();
+  switchScreen('home');
+  // If all topics done, mark
+  checkAchievements();
+})();
+</script>
+</body>
+</html>
